@@ -1,57 +1,67 @@
 package Components.Enum;
 
-// CLASSE QUE DEFINE OS DADOS E OS TIPOS USADOS PARA LIVRO
 public class Livro {
     private int id;
+    private String isbn;
     private String titulo;
     private String autor;
     private String categoria;
+    private String status;
 
-// INICIALIZA O OBJETO LIVRO
-    public Livro(int id, String titulo, String autor, String categoria) {
+    public Livro(int id, String isbn, String titulo, String autor, String categoria, String status) {
         this.id = id;
+        this.isbn = isbn;
         this.titulo = titulo;
         this.autor = autor;
         this.categoria = categoria;
+        this.status = status;
     }
 
-// RETORNA O ID DO LIVRO
     public int getId() {
         return id;
     }
 
-// DEFINE O ID DO LIVRO COM O VALOR FORNECIDO
     public void setId(int id) {
         this.id = id;
     }
 
-// RETORNA O TITULO DO LIVRO
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
     public String getTitulo() {
         return titulo;
     }
 
-// DEFINE O TITULO DO LIVRO COM O VALOR FORNECIDO
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
 
-// RETORNA O AUTOR DO LIVRO
     public String getAutor() {
         return autor;
     }
 
-// DEFINE O AUTOR DO LIVRO COM O VALOR FORNECIDO
     public void setAutor(String autor) {
         this.autor = autor;
     }
 
-// RETORNA A CATEGORIA DO LIVRO
     public String getCategoria() {
         return categoria;
     }
 
-// DEFINE A CATEGORIA COM O VALOR FORNECIDO
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

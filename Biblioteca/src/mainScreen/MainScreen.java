@@ -40,6 +40,11 @@ public class MainScreen extends JFrame {
         tablePanel.setAdmin(admin);
         mainPanel.add(tablePanel, tablePanel.getConstraints());
 
+        // Botão "Limpar filtro"
+        ClearFilterButton clearFilterButton = new ClearFilterButton(searchField, tablePanel);
+        clearFilterButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        mainPanel.add(clearFilterButton, clearFilterButton.getConstraints());
+
         // Botão "Pesquisa"
         SearchButton searchButton = new SearchButton(searchField, tablePanel);
         searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -51,8 +56,5 @@ public class MainScreen extends JFrame {
         if (admin) {
             mainPanel.add(addButton, addButton.getConstraints());
         }
-        
     }
-
-    
 }

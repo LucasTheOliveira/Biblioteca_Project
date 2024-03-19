@@ -6,6 +6,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import Components.Enum.CategoryComponent;
+import Components.Enum.StatusComponent;
 import Components.customTable.CustomTablePanel;
 import Components.customTitle.BookListLabel;
 
@@ -19,6 +20,8 @@ public class AddBookDialog extends JDialog {
     private JTextField authorField;
     @SuppressWarnings("rawtypes")
     private JComboBox categoryComboBox;
+    private JComboBox statusComboBox;
+    private JTextField isbnField;
     private JButton saveButton;
     private boolean isEditing;
 
@@ -26,8 +29,12 @@ public class AddBookDialog extends JDialog {
     public AddBookDialog(JFrame parentFrame, CustomTablePanel tablePanel, String originalTitle) {
         super(parentFrame, "", true);
         this.isEditing = (originalTitle != null);
-        
 
+        StatusComponent staturComponent = new StatusComponent();
+        CategoryComponent categoryComponent = new CategoryComponent();
+        String[] bookOptions = categoryComponent.getBookOptions();
+        String[] statusOptions = staturComponent.getStatusOptions();
+        
         setResizable(false);
         getContentPane().setBackground(Color.WHITE);
         UIManager.put("Panel.background", Color.WHITE);
@@ -37,25 +44,41 @@ public class AddBookDialog extends JDialog {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 20, 10);
 
-        CategoryComponent categoryComponent = new CategoryComponent();
-        String[] bookOptions = categoryComponent.getBookOptions();
-
         titleField = createTextField("Digite o nome do livro");
-        authorField = createTextField("Digite o nome do autor");
-        categoryComboBox = new JComboBox(bookOptions);
-
         titleField.setPreferredSize(new Dimension(200, titleField.getPreferredSize().height));
+        titleField.setFont(new Font("Arial", Font.BOLD, 15));
+
+        authorField = createTextField("Digite o nome do autor");
         authorField.setPreferredSize(new Dimension(200, authorField.getPreferredSize().height));
+        authorField.setFont(new Font("Arial", Font.BOLD, 15));
+
+        categoryComboBox = new JComboBox(bookOptions);
         categoryComboBox.setSize(200, 50);
         categoryComboBox.setBorder(new RoundedBorder(10));
         categoryComboBox.setFocusable(false);
-
-        titleField.setFont(new Font("Arial", Font.BOLD, 15));
-        authorField.setFont(new Font("Arial", Font.BOLD, 15));
         categoryComboBox.setFont(new Font("Arial", Font.BOLD, 15));
         categoryComboBox.setBackground(Color.WHITE);
 
-        // Label "Lista de Livros"
+        statusComboBox = new JComboBox(statusOptions);
+        statusComboBox.setSize(200, 50);
+        statusComboBox.setBorder(new RoundedBorder(10));
+        statusComboBox.setFocusable(false);
+        statusComboBox.setFont(new Font("Arial", Font.BOLD, 15));
+        statusComboBox.setBackground(Color.WHITE);
+
+        isbnField = createTextField("Digite o ISBN do livro");
+        isbnField.setPreferredSize(new Dimension(200, isbnField.getPreferredSize().height));
+        isbnField.setFont(new Font("Arial", Font.BOLD, 15));
+        isbnField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE && c != KeyEvent.VK_DELETE) {
+                    e.consume();
+                }
+            }
+        });
+
         BookListLabel bookListLabel = new BookListLabel("");
         bookListLabel.setText(isEditing ? "Editar Livro" : "Adicionar Livro");
         GridBagConstraints bookListconstraints = bookListLabel.getConstraints(0, 0, GridBagConstraints.WEST,
@@ -73,6 +96,10 @@ public class AddBookDialog extends JDialog {
         panel.add(createLabel("Autor:", labelFont), gbc);
         gbc.gridy++;
         panel.add(createLabel("Categoria:", labelFont), gbc);
+        gbc.gridy++;
+        panel.add(createLabel("Disponibilidade:", labelFont), gbc);
+        gbc.gridy++;
+        panel.add(createLabel("ISBN do Livro:", labelFont), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 1;
@@ -85,10 +112,24 @@ public class AddBookDialog extends JDialog {
         panel.add(authorField, gbc);
         gbc.gridy++;
         panel.add(categoryComboBox, gbc);
+        gbc.gridy++;
+        panel.add(statusComboBox, gbc);
+        gbc.gridy++;
+        panel.add(isbnField, gbc);
+
+        JButton cancelButton = new JButton("Cancelar");
+        cancelButton.setBackground(new Color(230, 230, 230));
+        cancelButton.setForeground(Color.BLACK);
+        cancelButton.setFocusable(false);
+        cancelButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        cancelButton.setPreferredSize(new Dimension(120, 40));
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
 
         saveButton = new JButton(isEditing ? "Salvar" : "Adicionar");
-        JButton cancelButton = new JButton("Cancelar");
-
         saveButton.setBackground(Color.LIGHT_GRAY);
         saveButton.setForeground(Color.WHITE);
         saveButton.setFocusable(false);
@@ -113,34 +154,45 @@ public class AddBookDialog extends JDialog {
             }
         };
 
-        titleField.getDocument().addDocumentListener(documentListener);
-        authorField.getDocument().addDocumentListener(documentListener);
+        saveButton.addPropertyChangeListener("enabled", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                boolean enabled = (boolean) evt.getNewValue();
+                if (!enabled) {
+                    saveButton.setBackground(Color.LIGHT_GRAY);
+                } else {
+                    saveButton.setBackground(new Color(0, 0, 139));
+                }
+            }
+        });
 
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                String isbn = (String) isbnField.getText();
                 String title = titleField.getText();
                 String author = authorField.getText();
                 String category = (String) categoryComboBox.getSelectedItem();
+                String status = (String) statusComboBox.getSelectedItem();
         
                 if (isEditing) {
-                    tablePanel.editBook(originalTitle, title, author, category);
+                    tablePanel.editBook(originalTitle, isbn, title, author, category, status);
                     SucessMessageDialog.showMessageDialog(
                             AddBookDialog.this,
                             "Livro \"" + title + "\" editado com sucesso!",
                             "Sucesso",
                             Color.BLUE,
                             Color.WHITE,
-                            Color.BLACK, // Nova cor da borda
+                            Color.BLACK,
                             15);
                 } else {
-                    tablePanel.addBook(title, author, category);
+                    tablePanel.addBook(title, isbn, author, category, status);
                     SucessMessageDialog.showMessageDialog(
                             AddBookDialog.this,
                             "Livro \"" + title + "\" criado com sucesso!",
                             "Sucesso",
                             Color.GREEN,
                             Color.BLACK,
-                            Color.BLACK, // Nova cor da borda
+                            Color.BLACK,
                             15);
                 }
         
@@ -148,16 +200,9 @@ public class AddBookDialog extends JDialog {
             }
         });
 
-        cancelButton.setBackground(new Color(230, 230, 230));
-        cancelButton.setForeground(Color.BLACK);
-        cancelButton.setFocusable(false);
-        cancelButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        cancelButton.setPreferredSize(new Dimension(120, 40));
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+        isbnField.getDocument().addDocumentListener(documentListener);
+        titleField.getDocument().addDocumentListener(documentListener);
+        authorField.getDocument().addDocumentListener(documentListener);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -176,29 +221,19 @@ public class AddBookDialog extends JDialog {
 
         getContentPane().add(panel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
-
         add(panel);
-
-        setSize(800, 600);
+        setSize(900, 700);
         setLocationRelativeTo(parentFrame);
-
-        saveButton.addPropertyChangeListener("enabled", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                boolean enabled = (boolean) evt.getNewValue();
-                if (!enabled) {
-                    saveButton.setBackground(Color.LIGHT_GRAY);
-                } else {
-                    saveButton.setBackground(new Color(0, 0, 139));
-                }
-            }
-        });
     }
 
+    
     public void setTitleField(String title) {
         titleField.setText(title);
+    }
+
+    public void setIsbnField(String isbn) {
+        isbnField.setText(isbn);
     }
     
     public void setAuthorField(String author) {
@@ -209,12 +244,18 @@ public class AddBookDialog extends JDialog {
         categoryComboBox.setSelectedItem(category);
     }
 
+    public void setStatusComboBox(String category) {
+        statusComboBox.setSelectedItem(category);
+    }
+
     private void enableOrDisableSaveButton() {
         boolean isTitleEmpty = titleField.getText().trim().isEmpty()
                 || titleField.getText().equals("Digite o nome do livro");
         boolean isAuthorEmpty = authorField.getText().trim().isEmpty()
                 || authorField.getText().equals("Digite o nome do autor");
-        saveButton.setEnabled(!isTitleEmpty && !isAuthorEmpty);
+        boolean isIsbnEmpty = isbnField.getText().trim().isEmpty()
+                || isbnField.getText().equals("Digite o ISBN do livro");
+        saveButton.setEnabled(!isTitleEmpty && !isAuthorEmpty && !isIsbnEmpty);
     }
 
     private JTextField createTextField(String placeholder) {
