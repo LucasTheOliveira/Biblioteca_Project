@@ -16,7 +16,6 @@ public class SearchField extends JTextField {
         super(FlowLayout.LEFT);
         this.tablePanel = tablePanel;
 
-// DEFINE AS PROPRIEDADES DO INPUT DE PESQUISA
         setPlaceholder("Digite aqui para pesquisar...");
         setPreferredSize(new Dimension(400, 50));
         setBorder(new RoundedBorder(10));
@@ -31,7 +30,15 @@ public class SearchField extends JTextField {
         });
     }
 
-// METODO PARA DEFINIR O PLACEHOLDER DO INPUT DE PESQUISA
+    public GridBagConstraints getConstraints() {
+        GridBagConstraints searchConstraints = new GridBagConstraints();
+        searchConstraints.gridx = 0;
+        searchConstraints.gridy = 2;
+        searchConstraints.anchor = GridBagConstraints.WEST;
+        searchConstraints.insets = new Insets(10, 20, 0, 0);
+        return searchConstraints;
+    }
+
     private void setPlaceholder(String text) {
         setText(text);
         setForeground(Color.GRAY);
@@ -54,17 +61,6 @@ public class SearchField extends JTextField {
         });
     }
 
-// DEFINE A CONFIGURAÇÃO/LOCALIZAÇÃO DE LAYOUT DO INPUT DE PESQUISA
-    public GridBagConstraints getConstraints() {
-        GridBagConstraints searchConstraints = new GridBagConstraints();
-        searchConstraints.gridx = 0;
-        searchConstraints.gridy = 2;
-        searchConstraints.anchor = GridBagConstraints.WEST;
-        searchConstraints.insets = new Insets(10, 20, 0, 0);
-        return searchConstraints;
-    }
-
-// CLASSE PARA DEIXAR A BORDA DO INPUT ARREDONDADA
     private class RoundedBorder implements Border {
         private int radius;
 
