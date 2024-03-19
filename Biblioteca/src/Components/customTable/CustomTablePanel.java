@@ -7,6 +7,7 @@ import Components.Enum.Livro;
 import Components.customDialog.AddBookDialog;
 import Components.customDialog.CustomDeleteConfirmationDialog;
 import Components.customDialog.SucessMessageDialog;
+import loginScreen.LoginScreen;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -19,13 +20,16 @@ public class CustomTablePanel extends JPanel {
     private JTable table;
     private CustomTableModel model;
     private List<Livro> livros;
+    private boolean admin;
 
     public CustomTablePanel() {
+        LoginScreen loginScreen = new LoginScreen();
+        this.admin = loginScreen.isAdmin();
         setLayout(new BorderLayout());
-// DEFINE O TAMANHO DA TABELA
+        // DEFINE O TAMANHO DA TABELA
         setPreferredSize(new Dimension(800, 400));
 
-// POPULA A TABELA DE LIVROS 
+        // POPULA A TABELA DE LIVROS
         livros = new ArrayList<>();
         livros.add(new Livro(1, "Livro 1", "Autor 1", "Terror"));
         livros.add(new Livro(2, "Livro 2", "Autor 2", "Suspense"));
@@ -50,24 +54,25 @@ public class CustomTablePanel extends JPanel {
         livros.add(new Livro(1, "Livro 1", "Autor 1", "Terror"));
         livros.add(new Livro(2, "Livro 2", "Autor 2", "Suspense"));
 
-// INSTANCIA A TABELA COM LIVROS COMO ARGUMENTO PARA INICIALIZAR A TABELA POPULADA
+        // INSTANCIA A TABELA COM LIVROS COMO ARGUMENTO PARA INICIALIZAR A TABELA
+        // POPULADA
         model = new CustomTableModel(livros);
         table = new JTable(model);
 
-// DEFINIÇÃO DE ESTILO DO HEADER DA TABELA
+        // DEFINIÇÃO DE ESTILO DO HEADER DA TABELA
         JTableHeader header = table.getTableHeader();
         header.setBackground(new Color(240, 240, 240));
         header.setForeground(new Color(0, 0, 139));
         header.setFont(new Font("Arial", Font.BOLD, 14));
 
-// ADIÇÃO DOS BOTÕES DE AÇÃO AH TABELA
-        addCustomButtonsToTable();
+        // ADIÇÃO DOS BOTÕES DE AÇÃO AH TABELA
+        addCustomButtonsToTable(admin);
         add(new JScrollPane(table), BorderLayout.CENTER);
         table.setRowHeight(40);
         table.setRowSelectionAllowed(false);
     }
 
-// METODO PARA EDITAR UM LIVRO
+    // METODO PARA EDITAR UM LIVRO
     public void editBook(String originalTitle, String newTitle, String author, String category) {
         for (Livro livro : livros) {
             if (livro.getTitulo().equals(originalTitle)) {
@@ -80,7 +85,8 @@ public class CustomTablePanel extends JPanel {
         model.fireTableDataChanged();
     }
 
-// METODO DE PESQUISA DOS LIVROS NA TABELA. SE ESTIVER VAZIO MOSTRA TODOS OS LIVROS (LINHA 85 E 86)
+    // METODO DE PESQUISA DOS LIVROS NA TABELA. SE ESTIVER VAZIO MOSTRA TODOS OS
+    // LIVROS (LINHA 85 E 86)
     public void searchInTable(String searchTerm) {
         if (searchTerm.equals("")) {
             model.setLivros(livros);
@@ -96,7 +102,7 @@ public class CustomTablePanel extends JPanel {
         model.fireTableDataChanged();
     }
 
-// METODO PARA CRIAR O LIVRO E ADICIONAR A TABELA
+    // METODO PARA CRIAR O LIVRO E ADICIONAR A TABELA
     public void addBook(String title, String author, String category) {
         int nextId = getNextID();
         Livro newLivro = new Livro(nextId, title, author, category);
@@ -113,7 +119,8 @@ public class CustomTablePanel extends JPanel {
         model.addRow(rowData);
     }
 
-// METODO PARA MANDER OS IDS EM ORDEM CRESCENTE, ELE VERIFICA O ID DO ULTIMO ITEM DA LISTA E ACRESCENTA +1
+    // METODO PARA MANDER OS IDS EM ORDEM CRESCENTE, ELE VERIFICA O ID DO ULTIMO
+    // ITEM DA LISTA E ACRESCENTA +1
     private int getNextID() {
         int maxID = 0;
         for (Livro livro : livros) {
@@ -124,7 +131,7 @@ public class CustomTablePanel extends JPanel {
         return maxID + 1;
     }
 
-// DEFINIÇÃO DO LAYOUT DA TABELA NA APLICAÇÃO
+    // DEFINIÇÃO DO LAYOUT DA TABELA NA APLICAÇÃO
     public GridBagConstraints getConstraints() {
         GridBagConstraints tableConstraints = new GridBagConstraints();
         tableConstraints.gridx = 0;
@@ -137,55 +144,62 @@ public class CustomTablePanel extends JPanel {
         return tableConstraints;
     }
 
-// ADICIONA OS BOTÕES DE AÇÃO DA TABELA
-    private void addCustomButtonsToTable() {
-        if (table.getColumnCount() > 0) {
+    // ADICIONA OS BOTÕES DE AÇÃO DA TABELA
+    private void addCustomButtonsToTable(boolean isAdmin) {
+        if (isAdmin && table.getColumnCount() > 0) {
             TableColumn column = table.getColumnModel().getColumn(table.getColumnCount() - 1);
-            column.setCellRenderer(new ButtonRenderer());
-            column.setCellEditor(new ButtonEditor());
+            column.setCellRenderer(new ButtonRenderer(admin));
+            column.setCellEditor(new ButtonEditor(admin));
         }
     }
 
-// RENDEREIZA OS BOTÕES DE AÇÃO NA TABELA
+    public void setAdmin(boolean admin){
+        this.admin = admin;
+        addCustomButtonsToTable(admin);
+    }
+
+    // RENDEREIZA OS BOTÕES DE AÇÃO NA TABELA
     private class ButtonRenderer extends DefaultTableCellRenderer {
         private JPanel panel;
         private JButton editButton;
         private JButton deleteButton;
 
-        public ButtonRenderer() {
-// DEFINIÇÃO DO PAINEL DOS BOTÕES DE AÇÃO
+        public ButtonRenderer(boolean admin) {
+            // DEFINIÇÃO DO PAINEL DOS BOTÕES DE AÇÃO
             panel = new JPanel();
             panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 2));
             panel.setBackground(Color.WHITE);
 
-// DEFINIÇÃO DOS BOTÕES COM SEUS RESPECTIVOS ICONIS
+            // DEFINIÇÃO DOS BOTÕES COM SEUS RESPECTIVOS ICONIS
             editButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/edit.png"))));
             deleteButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/delete.png"))));
 
-// DEFINIÇÃO DOS TOOLTIPS DOS BOTÕES ( FUNCIONANDO???? )
+            // DEFINIÇÃO DOS TOOLTIPS DOS BOTÕES ( FUNCIONANDO???? )
             editButton.setToolTipText("Editar");
             deleteButton.setToolTipText("Excluir");
 
-// LISTENER PARA DETECTAR QUANDO O MOUSE PASSA POR CIMA DO BOTÃO DE EDIT E MUDAR O CURSOR
+            // LISTENER PARA DETECTAR QUANDO O MOUSE PASSA POR CIMA DO BOTÃO DE EDIT E MUDAR
+            // O CURSOR
             editButton.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     editButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 }
             });
 
-// LISTENER PARA DETECTAR QUANDO O MOUSE PASSA POR CIMA DO BOTÃO DE DELEÇÃO E MUDAR O CURSOR
+            // LISTENER PARA DETECTAR QUANDO O MOUSE PASSA POR CIMA DO BOTÃO DE DELEÇÃO E
+            // MUDAR O CURSOR
             deleteButton.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     deleteButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 }
             });
 
-// ADICIONA OS BOTÕES AO PANEL DE BOTÕES
+            // ADICIONA OS BOTÕES AO PANEL DE BOTÕES
             panel.add(editButton);
             panel.add(deleteButton);
         }
 
-// ADICIONA OS BOTÕES AOS CAMPOS DA TABELA
+        // ADICIONA OS BOTÕES AOS CAMPOS DA TABELA
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
             panel.setBackground(Color.WHITE);
@@ -200,7 +214,7 @@ public class CustomTablePanel extends JPanel {
         private Object currentValue;
         private int row;
 
-        public ButtonEditor() {
+        public ButtonEditor(boolean admin) {
             panel = new JPanel();
             panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 2));
             panel.setBackground(Color.WHITE);
@@ -252,7 +266,7 @@ public class CustomTablePanel extends JPanel {
                     }
                 }
             });
-        
+
             panel.add(editButton);
             panel.add(deleteButton);
         }
@@ -270,7 +284,7 @@ public class CustomTablePanel extends JPanel {
         }
     }
 
-// METODO PARA MANIPULZAÇÃO DO TAMANHO DO ICONI
+    // METODO PARA MANIPULZAÇÃO DO TAMANHO DO ICONI
     private ImageIcon resizeIcon(ImageIcon icon) {
         Image img = icon.getImage();
         Image newImg = img.getScaledInstance(16, 16, Image.SCALE_SMOOTH);

@@ -37,6 +37,7 @@ public class MainScreen extends JFrame {
 
         // Tabela de Livros
         CustomTablePanel tablePanel = new CustomTablePanel();
+        tablePanel.setAdmin(admin);
         mainPanel.add(tablePanel, tablePanel.getConstraints());
 
         // Botão "Pesquisa"

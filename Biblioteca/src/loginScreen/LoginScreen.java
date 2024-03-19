@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 public class LoginScreen extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
+    private boolean admin;
 
     public LoginScreen() {
         setTitle("Login");
@@ -43,7 +44,7 @@ public class LoginScreen extends JFrame {
                 dispose(); 
                 String textLogin = usernameField.getText();
                 String passLogin = new String (passwordField.getPassword());
-                boolean admin = false;
+                admin = false;
                 if (textLogin.contains("admin") && passLogin.contains("123")) {
                   admin = true;
 
@@ -63,7 +64,11 @@ public class LoginScreen extends JFrame {
         });
         panel.add(registerButton);
     }
-
+    
+    public boolean isAdmin(){
+        return admin;
+    }
+    
     public static void main(String[] args) {
         LoginScreen loginScreen = new LoginScreen();
         loginScreen.setVisible(true);
