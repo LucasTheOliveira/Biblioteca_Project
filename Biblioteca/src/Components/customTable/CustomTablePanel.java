@@ -89,20 +89,20 @@ public class CustomTablePanel extends JPanel {
         idColumn.setMinWidth(50);
         
         TableColumn isbnColumn = table.getColumnModel().getColumn(1);
-        isbnColumn.setMaxWidth(250);
-        isbnColumn.setMinWidth(250);
+        isbnColumn.setMaxWidth(200);
+        isbnColumn.setMinWidth(200);
 
         TableColumn authorColumn = table.getColumnModel().getColumn(3);
-        authorColumn.setMaxWidth(300);
-        authorColumn.setMinWidth(300);
+        authorColumn.setMaxWidth(200);
+        authorColumn.setMinWidth(200);
 
         TableColumn categoryColumn = table.getColumnModel().getColumn(4);
-        categoryColumn.setMaxWidth(300);
-        categoryColumn.setMinWidth(300);
+        categoryColumn.setMaxWidth(200);
+        categoryColumn.setMinWidth(200);
 
         TableColumn dispoColumn = table.getColumnModel().getColumn(5);
-        dispoColumn.setMaxWidth(300);
-        dispoColumn.setMinWidth(300);
+        dispoColumn.setMaxWidth(200);
+        dispoColumn.setMinWidth(200);
 
         TableColumn actionsColumn = table.getColumnModel().getColumn(6);
         actionsColumn.setMaxWidth(220);
