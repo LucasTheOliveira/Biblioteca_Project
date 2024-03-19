@@ -13,7 +13,7 @@ import Components.customTable.CustomTablePanel;
 public class CustomButton extends JButton {
     private CustomTablePanel tablePanel;
 
-// CONSTRUTOR
+// CONSTRUTO
     public CustomButton(CustomTablePanel tablePanel) {
         super("+ Adicionar Livro");
         this.tablePanel = tablePanel;
