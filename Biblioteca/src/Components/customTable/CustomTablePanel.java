@@ -6,6 +6,7 @@ import javax.swing.table.*;
 import Components.Enum.Livro;
 import Components.customDialog.AddBookDialog;
 import Components.customDialog.CustomDeleteConfirmationDialog;
+import Components.customDialog.RentBookDialog;
 import Components.customDialog.SucessMessageDialog;
 import loginScreen.LoginScreen;
 
@@ -32,26 +33,26 @@ public class CustomTablePanel extends JPanel {
         setPreferredSize(new Dimension(800, 400));
 
         livros = new ArrayList<>();
-        livros.add(new Livro(1, "9788573260712", "Dom Casmurro", "Machado de Assis", "Romance", "Disponivel"));
-        livros.add(new Livro(2, "9788532530788", "Harry Potter e a Pedra Filosofal", "J.K. Rowling", "Fantasia", "Alugado"));
-        livros.add(new Livro(3, "9788535914849", "1984", "George Orwell", "Ficção Científica", "Disponivel"));
-        livros.add(new Livro(4, "9788595081267", "O Senhor dos Anéis: A Sociedade do Anel", "J.R.R. Tolkien", "Fantasia", "Disponivel"));
-        livros.add(new Livro(5, "9788573262303", "Cem Anos de Solidão", "Gabriel García Márquez", "Realismo Mágico", "Alugado"));
-        livros.add(new Livro(6, "9788580572182", "A Culpa É das Estrelas", "John Green", "Romance", "Disponivel"));
-        livros.add(new Livro(7, "9788582850372", "O Pequeno Príncipe", "Antoine de Saint-Exupéry", "Literatura Infantil", "Disponivel"));
-        livros.add(new Livro(8, "9788598078170", "Percy Jackson e o Ladrão de Raios", "Rick Riordan", "Fantasia", "Disponivel"));
-        livros.add(new Livro(9, "9788539004111", "O Poder do Hábito", "Charles Duhigg", "Autoajuda", "Disponivel"));
-        livros.add(new Livro(10, "9788535915631", "A Revolução dos Bichos", "George Orwell", "Sátira Política", "Alugado"));
-        livros.add(new Livro(11, "9788580411249", "O Alquimista", "Paulo Coelho", "Ficção Espiritual", "Disponivel"));
-        livros.add(new Livro(12, "9788578270695", "As Crônicas de Nárnia: O Leão, a Feiticeira e o Guarda-Roupa", "C.S. Lewis", "Fantasia", "Alugado"));
-        livros.add(new Livro(13, "9788580570638", "A Menina que Roubava Livros", "Markus Zusak", "Drama", "Disponivel"));
-        livros.add(new Livro(14, "9788580572243", "O Diário de Anne Frank", "Anne Frank", "Biografia", "Disponivel"));
-        livros.add(new Livro(15, "9788578275782", "O Hobbit", "J.R.R. Tolkien", "Fantasia", "Disponivel"));
-        livros.add(new Livro(16, "9788572329949", "Orgulho e Preconceito", "Jane Austen", "Romance", "Disponivel"));
-        livros.add(new Livro(17, "9788535925609", "A Metamorfose", "Franz Kafka", "Ficção", "Alugado"));
-        livros.add(new Livro(18, "9788525430827", "Crime e Castigo", "Fiódor Dostoiévski", "Romance", "Disponivel"));
-        livros.add(new Livro(19, "9788534908999", "O Retrato de Dorian Gray", "Oscar Wilde", "Clássico", "Disponivel"));
-        livros.add(new Livro(20, "9788573265649", "Anna Karenina", "Liev Tolstói", "Romance", "Disponivel"));
+        livros.add(new Livro(1, "9788573260712", "Dom Casmurro", "Machado de Assis", "Romance", "Disponivel", "1 Semana"));
+        livros.add(new Livro(2, "9788532530788", "Harry Potter e a Pedra Filosofal", "J.K. Rowling", "Fantasia", "Alugado", "1 Semana"));
+        livros.add(new Livro(3, "9788535914849", "1984", "George Orwell", "Ficção Científica", "Disponivel", "1 Semana"));
+        livros.add(new Livro(4, "9788595081267", "O Senhor dos Anéis: A Sociedade do Anel", "J.R.R. Tolkien", "Fantasia", "Disponivel", "1 Semana"));
+        livros.add(new Livro(5, "9788573262303", "Cem Anos de Solidão", "Gabriel García Márquez", "Realismo Mágico", "Alugado", "1 Semana"));
+        livros.add(new Livro(6, "9788580572182", "A Culpa É das Estrelas", "John Green", "Romance", "Disponivel", "1 Semana"));
+        livros.add(new Livro(7, "9788582850372", "O Pequeno Príncipe", "Antoine de Saint-Exupéry", "Literatura Infantil", "Disponivel", "1 Semana"));
+        livros.add(new Livro(8, "9788598078170", "Percy Jackson e o Ladrão de Raios", "Rick Riordan", "Fantasia", "Disponivel", "1 Semana"));
+        livros.add(new Livro(9, "9788539004111", "O Poder do Hábito", "Charles Duhigg", "Autoajuda", "Disponivel", "1 Semana"));
+        livros.add(new Livro(10, "9788535915631", "A Revolução dos Bichos", "George Orwell", "Sátira Política", "Alugado", "1 Semana"));
+        livros.add(new Livro(11, "9788580411249", "O Alquimista", "Paulo Coelho", "Ficção Espiritual", "Disponivel", "1 Semana"));
+        livros.add(new Livro(12, "9788578270695", "As Crônicas de Nárnia: O Leão, a Feiticeira e o Guarda-Roupa", "C.S. Lewis", "Fantasia", "Alugado", "1 Semana"));
+        livros.add(new Livro(13, "9788580570638", "A Menina que Roubava Livros", "Markus Zusak", "Drama", "Disponivel", "1 Semana"));
+        livros.add(new Livro(14, "9788580572243", "O Diário de Anne Frank", "Anne Frank", "Biografia", "Disponivel", "1 Semana"));
+        livros.add(new Livro(15, "9788578275782", "O Hobbit", "J.R.R. Tolkien", "Fantasia", "Disponivel", "1 Semana"));
+        livros.add(new Livro(16, "9788572329949", "Orgulho e Preconceito", "Jane Austen", "Romance", "Disponivel", "1 Semana"));
+        livros.add(new Livro(17, "9788535925609", "A Metamorfose", "Franz Kafka", "Ficção", "Alugado", "1 Semana"));
+        livros.add(new Livro(18, "9788525430827", "Crime e Castigo", "Fiódor Dostoiévski", "Romance", "Disponivel", "1 Semana"));
+        livros.add(new Livro(19, "9788534908999", "O Retrato de Dorian Gray", "Oscar Wilde", "Clássico", "Disponivel", "1 Semana"));
+        livros.add(new Livro(20, "9788573265649", "Anna Karenina", "Liev Tolstói", "Romance", "Disponivel", "1 Semana"));
 
         model = new CustomTableModel(livros);
         table = new JTable(model);
@@ -81,7 +82,7 @@ public class CustomTablePanel extends JPanel {
         header.setForeground(new Color(0, 0, 139));
         header.setFont(new Font("Arial", Font.BOLD, 15));
 
-        addCustomButtonsToTable(admin);
+        addCustomButtonsToTable();
         add(new JScrollPane(table), BorderLayout.CENTER);
 
         TableColumn idColumn = table.getColumnModel().getColumn(0);
@@ -121,18 +122,25 @@ public class CustomTablePanel extends JPanel {
         return tableConstraints;
     }
 
-    public void editBook(String isbn, String originalTitle, String newTitle, String author, String category, String status) {
+    public void editBook(String isbn, String originalTitle, String newTitle, String author, String category, String status, String rentTime) {
         for (Livro livro : livros) {
             if (livro.getTitulo().equals(originalTitle)) {
-                livro.setIsbn(isbn);
                 livro.setTitulo(newTitle);
                 livro.setAutor(author);
                 livro.setCategoria(category);
                 livro.setStatus(status);
+                livro.setIsbn(isbn);
+                livro.setRentTime(rentTime);
                 break;
             }
         }
         model.fireTableDataChanged();
+    }
+
+    public void editStatus(int row, String status) {
+        Livro livro = livros.get(row);
+        livro.setStatus(status);
+        model.fireTableRowsUpdated(row, row);
     }
 
     public void searchInTable(String searchTerm) {
@@ -153,12 +161,13 @@ public class CustomTablePanel extends JPanel {
         }
         model.fireTableDataChanged();
     }
+    
 
-    public void addBook(String isbn, String title, String author, String category, String status) {
+    public void addBook(String isbn, String title, String author, String category, String status, String rentTime) {
         int nextId = getNextID();
-        Livro newLivro = new Livro(nextId, isbn, title, author, category, status);
+        Livro newLivro = new Livro(nextId, title, isbn, author, category, status, rentTime);
         livros.add(newLivro);
-
+    
         Vector<Object> rowData = new Vector<>();
         rowData.add(newLivro.getId());
         rowData.add(newLivro.getIsbn());
@@ -166,7 +175,8 @@ public class CustomTablePanel extends JPanel {
         rowData.add(newLivro.getAutor());
         rowData.add(newLivro.getCategoria());
         rowData.add(newLivro.getStatus());
-
+        rowData.add(""); 
+    
         model.addRow(rowData);
     }
 
@@ -179,101 +189,147 @@ public class CustomTablePanel extends JPanel {
         }
         return maxID + 1;
     }
-
-    private void addCustomButtonsToTable(boolean isAdmin) {
-        if (isAdmin && table.getColumnCount() > 0) {
-            TableColumn column = table.getColumnModel().getColumn(table.getColumnCount() - 1);
-            column.setCellRenderer(new ButtonRenderer(admin));
-            column.setCellEditor(new ButtonEditor(admin));
-        }
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-        addCustomButtonsToTable(admin);
-    }
-
+    
     private ImageIcon resizeIcon(ImageIcon icon) {
         Image img = icon.getImage();
         Image newImg = img.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
         return new ImageIcon(newImg);
     }
 
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+        updateTableButtons();
+    }
+    
+    private void addCustomButtonsToTable() {
+        if (table.getColumnCount() > 0) {
+            TableColumn column = table.getColumnModel().getColumn(table.getColumnCount() - 1);
+            column.setCellRenderer(new ButtonRenderer());
+            column.setCellEditor(new ButtonEditor());
+        }
+    }
+    
+    private void updateTableButtons() {
+        addCustomButtonsToTable();
+        table.repaint();
+    }
+    
     private class ButtonRenderer extends DefaultTableCellRenderer {
         private JPanel panel;
         private JButton editButton;
         private JButton deleteButton;
-
-        public ButtonRenderer(boolean admin) {
+        private JButton rentButton;
+    
+        public ButtonRenderer() {
             panel = new JPanel();
             panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 2));
             panel.setBackground(Color.WHITE);
-
+    
+            rentButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/rent.png"))));
             editButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/edit.png"))));
             deleteButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/delete.png"))));
+    
+            rentButton.setToolTipText("Alugar");
             editButton.setToolTipText("Editar");
             deleteButton.setToolTipText("Excluir");
-
+    
+            rentButton.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    rentButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                }
+            });
+    
             editButton.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     editButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 }
             });
-
+    
+    
             deleteButton.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     deleteButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 }
             });
-
-            panel.add(editButton);
-            panel.add(deleteButton);
+    
+            panel.add(rentButton);
+            if (admin) {
+                panel.add(editButton);
+                panel.add(deleteButton);
+            }
         }
-
+    
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
             panel.setBackground(Color.WHITE);
             return panel;
         }
     }
-
+    
     private class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
         private JPanel panel;
         private JButton editButton;
         private JButton deleteButton;
+        private JButton rentButton;
         private Object currentValue;
         private int row;
-
-        public ButtonEditor(boolean admin) {
+    
+        public ButtonEditor() {
             panel = new JPanel();
             panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 2));
             panel.setBackground(Color.WHITE);
-
+    
+            rentButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/rent.png"))));
             editButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/edit.png"))));
             deleteButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/delete.png"))));
-
+    
+            rentButton.setToolTipText("Alugar");
             editButton.setToolTipText("Editar");
             deleteButton.setToolTipText("Excluir");
 
-            editButton.addActionListener(new ActionListener() {
+            rentButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     int selectedRow = table.convertRowIndexToModel(row);
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(CustomTablePanel.this);
                     Livro livro = livros.get(selectedRow);
 
+                    livro.setStatus("Alugado");
+            
+                    RentBookDialog rentBookDialog = new RentBookDialog(frame, CustomTablePanel.this, livro.getTitulo());
+                    rentBookDialog.setTitleField(livro.getTitulo());
+                    rentBookDialog.setIsbnField(livro.getIsbn());
+                    rentBookDialog.setAuthorField(livro.getAutor());
+                    rentBookDialog.setRentTimeField(livro.getRentTime());
+                    rentBookDialog.setCategoryComboBox(livro.getCategoria());
+
+                    rentButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    rentButton.setFocusable(false);
+                    rentBookDialog.setVisible(true);
+
+                    model.fireTableRowsUpdated(selectedRow, selectedRow);
+                }
+            });
+    
+            editButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    int selectedRow = table.convertRowIndexToModel(row);
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(CustomTablePanel.this);
+                    Livro livro = livros.get(selectedRow);
+    
                     AddBookDialog addBookDialog = new AddBookDialog(frame, CustomTablePanel.this, livro.getTitulo());
-                    addBookDialog.setIsbnField(livro.getIsbn());
                     addBookDialog.setTitleField(livro.getTitulo());
+                    addBookDialog.setIsbnField(livro.getIsbn());
                     addBookDialog.setAuthorField(livro.getAutor());
                     addBookDialog.setCategoryComboBox(livro.getCategoria());
+                    addBookDialog.setRentTime(livro.getRentTime());
                     addBookDialog.setStatusComboBox(livro.getStatus());
-
+    
                     editButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     editButton.setFocusable(false);
                     addBookDialog.setVisible(true);
                 }
             });
-
+    
             deleteButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     CustomDeleteConfirmationDialog confirmationDialog = new CustomDeleteConfirmationDialog(null,
@@ -298,24 +354,27 @@ public class CustomTablePanel extends JPanel {
                     }
                 }
             });
-
-            panel.add(editButton);
-            panel.add(deleteButton);
+    
+            panel.add(rentButton);
+            if (admin) {
+                panel.add(editButton);
+                panel.add(deleteButton);
+            }
         }
-
+    
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
                 int column) {
             currentValue = value;
             this.row = row;
             panel.setBackground(Color.WHITE);
-
+    
             if (column == table.getColumnCount() - 1) {
                 return panel;
             } else {
                 return new JLabel();
             }
         }
-
+    
         public Object getCellEditorValue() {
             return currentValue;
         }
