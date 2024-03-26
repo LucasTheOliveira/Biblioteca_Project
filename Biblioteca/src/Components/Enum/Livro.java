@@ -7,14 +7,16 @@ public class Livro {
     private String autor;
     private String categoria;
     private String status;
+    private String rentTime;
 
-    public Livro(int id, String isbn, String titulo, String autor, String categoria, String status) {
+    public Livro(int id, String isbn, String titulo, String autor, String categoria, String status, String rentTime) {
         this.id = id;
         this.isbn = isbn;
         this.titulo = titulo;
         this.autor = autor;
         this.categoria = categoria;
         this.status = status;
+        this.rentTime = rentTime;
     }
 
     public int getId() {
@@ -63,5 +65,13 @@ public class Livro {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getRentTime() {
+        return rentTime;
+    }
+
+    public void setRentTime(String rentTime) {
+        this.rentTime = rentTime;
     }
 }

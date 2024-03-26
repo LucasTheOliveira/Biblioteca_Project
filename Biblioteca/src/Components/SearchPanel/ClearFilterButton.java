@@ -13,7 +13,7 @@ public class ClearFilterButton extends JButton {
     private CustomTablePanel tablePanel;
 
     public ClearFilterButton(JTextField searchField, CustomTablePanel tablePanel) {
-        super("Limpar Filtro");
+        super("Limpar Filtro", resizeIcon(new ImageIcon(SearchButton.class.getResource("/icons/borracha.png"))));
         this.searchField = searchField;
         this.tablePanel = tablePanel;
 
@@ -37,6 +37,12 @@ public class ClearFilterButton extends JButton {
         searchConstraints.anchor = GridBagConstraints.WEST;
         searchConstraints.insets = new Insets(10, 120, 0, 0);
         return searchConstraints;
+    }
+
+    private static ImageIcon resizeIcon(ImageIcon icon) {
+        Image img = icon.getImage();
+        Image newImg = img.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return new ImageIcon(newImg);
     }
 
     private static class RoundedBorder implements Border {

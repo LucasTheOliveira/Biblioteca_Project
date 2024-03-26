@@ -18,12 +18,14 @@ import java.beans.PropertyChangeListener;
 public class AddBookDialog extends JDialog {
     private JTextField titleField;
     private JTextField authorField;
+    private JTextField isbnField;
     @SuppressWarnings("rawtypes")
     private JComboBox categoryComboBox;
     private JComboBox statusComboBox;
-    private JTextField isbnField;
     private JButton saveButton;
     private boolean isEditing;
+    private JTextField rentTimeField;
+    private JComboBox<String> rentTimeUnitComboBox;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public AddBookDialog(JFrame parentFrame, CustomTablePanel tablePanel, String originalTitle) {
@@ -34,7 +36,7 @@ public class AddBookDialog extends JDialog {
         CategoryComponent categoryComponent = new CategoryComponent();
         String[] bookOptions = categoryComponent.getBookOptions();
         String[] statusOptions = staturComponent.getStatusOptions();
-        
+
         setResizable(false);
         getContentPane().setBackground(Color.WHITE);
         UIManager.put("Panel.background", Color.WHITE);
@@ -79,6 +81,41 @@ public class AddBookDialog extends JDialog {
             }
         });
 
+        rentTimeField = new JTextField();
+        rentTimeField = createTextField("Digite um numero");
+        rentTimeField.setPreferredSize(new Dimension(80, 50));
+        rentTimeField.setBorder(new RoundedBorder(10));
+        rentTimeField.setBackground(Color.WHITE);
+        rentTimeField.setFont(new Font("Arial", Font.BOLD, 15));
+        rentTimeField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE && c != KeyEvent.VK_DELETE) {
+                    e.consume();
+                }
+            }
+        });
+
+        String[] rentTimeUnits = { "Dias", "Semanas", "Meses" };
+        rentTimeUnitComboBox = new JComboBox<>(rentTimeUnits);
+        rentTimeUnitComboBox.setPreferredSize(new Dimension(455, 50));
+        rentTimeUnitComboBox.setFont(new Font("Arial", Font.BOLD, 15));
+        rentTimeUnitComboBox.setBackground(Color.WHITE);
+        rentTimeUnitComboBox.setFocusable(false);
+        rentTimeUnitComboBox.setBorder(new RoundedBorder(10));
+        rentTimeUnitComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enableOrDisableSaveButton();
+            }
+        });
+
+        JPanel rentTimePanel = new JPanel();
+        rentTimePanel.setBackground(Color.WHITE);
+        rentTimePanel.add(rentTimeField);
+        rentTimePanel.add(rentTimeUnitComboBox);
+
         BookListLabel bookListLabel = new BookListLabel("");
         bookListLabel.setText(isEditing ? "Editar Livro" : "Adicionar Livro");
         GridBagConstraints bookListconstraints = bookListLabel.getConstraints(0, 0, GridBagConstraints.WEST,
@@ -100,6 +137,8 @@ public class AddBookDialog extends JDialog {
         panel.add(createLabel("Disponibilidade:", labelFont), gbc);
         gbc.gridy++;
         panel.add(createLabel("ISBN do Livro:", labelFont), gbc);
+        gbc.gridy++;
+        panel.add(createLabel("Tempo de Aluguel:", labelFont), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 1;
@@ -116,6 +155,8 @@ public class AddBookDialog extends JDialog {
         panel.add(statusComboBox, gbc);
         gbc.gridy++;
         panel.add(isbnField, gbc);
+        gbc.gridy++;
+        panel.add(rentTimePanel, gbc);
 
         JButton cancelButton = new JButton("Cancelar");
         cancelButton.setBackground(new Color(230, 230, 230));
@@ -168,14 +209,17 @@ public class AddBookDialog extends JDialog {
 
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String isbn = (String) isbnField.getText();
                 String title = titleField.getText();
+                String isbn = isbnField.getText();
                 String author = authorField.getText();
                 String category = (String) categoryComboBox.getSelectedItem();
                 String status = (String) statusComboBox.getSelectedItem();
-        
+                String rentTime = rentTimeField.getText().toString();
+                String rentTimeUnit = (String) rentTimeUnitComboBox.getSelectedItem();
+                String rentTimeString = rentTime + " " + rentTimeUnit;
+
                 if (isEditing) {
-                    tablePanel.editBook(originalTitle, isbn, title, author, category, status);
+                    tablePanel.editBook(originalTitle, isbn, title, author, category, status, rentTimeString);
                     SucessMessageDialog.showMessageDialog(
                             AddBookDialog.this,
                             "Livro \"" + title + "\" editado com sucesso!",
@@ -185,7 +229,7 @@ public class AddBookDialog extends JDialog {
                             Color.BLACK,
                             15);
                 } else {
-                    tablePanel.addBook(title, isbn, author, category, status);
+                    tablePanel.addBook(title, isbn, author, category, status, rentTimeString);
                     SucessMessageDialog.showMessageDialog(
                             AddBookDialog.this,
                             "Livro \"" + title + "\" criado com sucesso!",
@@ -195,7 +239,7 @@ public class AddBookDialog extends JDialog {
                             Color.BLACK,
                             15);
                 }
-        
+
                 dispose();
             }
         });
@@ -223,11 +267,10 @@ public class AddBookDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
         add(panel);
-        setSize(900, 700);
+        setSize(900, 800);
         setLocationRelativeTo(parentFrame);
     }
 
-    
     public void setTitleField(String title) {
         titleField.setText(title);
     }
@@ -235,17 +278,30 @@ public class AddBookDialog extends JDialog {
     public void setIsbnField(String isbn) {
         isbnField.setText(isbn);
     }
-    
+
     public void setAuthorField(String author) {
         authorField.setText(author);
     }
-    
+
     public void setCategoryComboBox(String category) {
         categoryComboBox.setSelectedItem(category);
     }
 
     public void setStatusComboBox(String category) {
         statusComboBox.setSelectedItem(category);
+    }
+
+    public void setRentTime(String rentTimeString) {
+        if (rentTimeString != null && !rentTimeString.isEmpty()) {
+            String[] parts = rentTimeString.split(" ");
+            if (parts.length == 2) {
+                String rentTimeValue = parts[0];
+                rentTimeField.setText(rentTimeValue);
+
+                String rentTimeUnit = parts[1];
+                rentTimeUnitComboBox.setSelectedItem(rentTimeUnit);
+            }
+        }
     }
 
     private void enableOrDisableSaveButton() {
