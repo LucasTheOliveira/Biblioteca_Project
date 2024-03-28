@@ -8,7 +8,6 @@ import Components.customTable.CustomTablePanel;
 import java.awt.*;
 import java.awt.event.*;
 
-// CLASSE DO INPUT DE PESQUISA
 public class SearchField extends JTextField {
     private CustomTablePanel tablePanel;
 

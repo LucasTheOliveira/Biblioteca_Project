@@ -21,6 +21,7 @@ public class AddBookDialog extends JDialog {
     private JTextField isbnField;
     @SuppressWarnings("rawtypes")
     private JComboBox categoryComboBox;
+    @SuppressWarnings("rawtypes")
     private JComboBox statusComboBox;
     private JButton saveButton;
     private boolean isEditing;
@@ -219,7 +220,7 @@ public class AddBookDialog extends JDialog {
                 String rentTimeString = rentTime + " " + rentTimeUnit;
 
                 if (isEditing) {
-                    tablePanel.editBook(originalTitle, isbn, title, author, category, status, rentTimeString);
+                    tablePanel.editBook(originalTitle, title, isbn, author, category, status, rentTimeString);
                     SucessMessageDialog.showMessageDialog(
                             AddBookDialog.this,
                             "Livro \"" + title + "\" editado com sucesso!",

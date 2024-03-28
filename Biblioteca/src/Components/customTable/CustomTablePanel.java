@@ -122,7 +122,7 @@ public class CustomTablePanel extends JPanel {
         return tableConstraints;
     }
 
-    public void editBook(String isbn, String originalTitle, String newTitle, String author, String category, String status, String rentTime) {
+    public void editBook(String originalTitle, String newTitle, String isbn, String author, String category, String status, String rentTime) {
         for (Livro livro : livros) {
             if (livro.getTitulo().equals(originalTitle)) {
                 livro.setTitulo(newTitle);
@@ -305,8 +305,6 @@ public class CustomTablePanel extends JPanel {
                     rentButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     rentButton.setFocusable(false);
                     rentBookDialog.setVisible(true);
-
-                    model.fireTableRowsUpdated(selectedRow, selectedRow);
                 }
             });
     

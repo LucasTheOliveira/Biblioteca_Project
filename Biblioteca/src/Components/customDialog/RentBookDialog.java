@@ -1,7 +1,6 @@
 package Components.customDialog;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 
 import Components.Enum.Livro;
 import Components.customTable.CustomTablePanel;
@@ -41,11 +40,11 @@ public class RentBookDialog extends JDialog {
         gbc.insets = new Insets(10, 10, 20, 10);
         Font labelFont = new Font("Arial", Font.BOLD, 20);
 
-        titleLabel = createLabel("Título:");
-        authorLabel = createLabel("Autor:");
-        categoryLabel = createLabel("Categoria:");
-        isbnLabel = createLabel("ISBN:");
-        rentTimeLabel = createLabel("Tempo de locação máximo:");
+        titleLabel = createLabel("Título:          ");
+        authorLabel = createLabel("Autor:          ");
+        categoryLabel = createLabel("Categoria:          ");
+        isbnLabel = createLabel("ISBN:          ");
+        rentTimeLabel = createLabel("Tempo de locação máximo:          ");
 
         titleLabel.setFont(labelFont);
         authorLabel.setFont(labelFont);
@@ -53,7 +52,7 @@ public class RentBookDialog extends JDialog {
         isbnLabel.setFont(labelFont);
         rentTimeLabel.setFont(labelFont);
 
-        JLabel dialogTitleLabel = new JLabel("Alugar de Livro");
+        JLabel dialogTitleLabel = new JLabel("Alugar Livro");
         dialogTitleLabel.setForeground(new Color(0, 0, 139));
         dialogTitleLabel.setFont(new Font("Arial", Font.BOLD, 30));
 
@@ -113,7 +112,7 @@ public class RentBookDialog extends JDialog {
                 tablePanel.editStatus(selectedRow, newStatus);
                 SucessMessageDialog.showMessageDialog(
                         RentBookDialog.this,
-                        "Livro \"" + title + "\" editado com sucesso!",
+                        "Livro \"" + title + "\" Alugado com sucesso!",
                         "Sucesso",
                         Color.BLUE,
                         Color.WHITE,
