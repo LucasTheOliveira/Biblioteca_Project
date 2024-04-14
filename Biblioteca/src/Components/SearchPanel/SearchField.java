@@ -13,7 +13,6 @@ public class SearchField extends JTextField {
 
     public SearchField() {
         super(FlowLayout.LEFT);
-        this.tablePanel = tablePanel;
 
         setPlaceholder("Digite aqui para pesquisar...");
         setPreferredSize(new Dimension(400, 50));

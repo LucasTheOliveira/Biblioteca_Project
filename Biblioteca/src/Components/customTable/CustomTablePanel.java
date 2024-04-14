@@ -292,10 +292,9 @@ public class CustomTablePanel extends JPanel {
                     int selectedRow = table.convertRowIndexToModel(row);
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(CustomTablePanel.this);
                     Livro livro = livros.get(selectedRow);
-
-                    livro.setStatus("Alugado");
             
-                    RentBookDialog rentBookDialog = new RentBookDialog(frame, CustomTablePanel.this, livro.getTitulo());
+                    RentBookDialog rentBookDialog = new RentBookDialog(frame, CustomTablePanel.this, livro.getTitulo(), livro);
+                    rentBookDialog.setSelectedRow(selectedRow);
                     rentBookDialog.setTitleField(livro.getTitulo());
                     rentBookDialog.setIsbnField(livro.getIsbn());
                     rentBookDialog.setAuthorField(livro.getAutor());

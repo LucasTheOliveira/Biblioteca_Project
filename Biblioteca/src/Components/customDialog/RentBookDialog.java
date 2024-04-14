@@ -20,9 +20,12 @@ public class RentBookDialog extends JDialog {
     private CustomTablePanel tablePanel;
     private List<Livro> livros;
     private JTable table;
+    @SuppressWarnings("unused")
+    private Livro livro;
 
-    public RentBookDialog(JFrame parent, CustomTablePanel tablePanel, String title) {
+    public RentBookDialog(JFrame parent, CustomTablePanel tablePanel, String title, Livro livro) {
         super(parent, "", true);
+        this.livro = livro;
         this.tablePanel = tablePanel;
         setLayout(new BorderLayout());
         setSize(600, 600);
@@ -52,7 +55,7 @@ public class RentBookDialog extends JDialog {
         isbnLabel.setFont(labelFont);
         rentTimeLabel.setFont(labelFont);
 
-        JLabel dialogTitleLabel = new JLabel("Alugar Livro");
+        JLabel dialogTitleLabel = new JLabel(livro.getStatus().equals("Alugado") ? "Devolver Livro" : "Alugar Livro");
         dialogTitleLabel.setForeground(new Color(0, 0, 139));
         dialogTitleLabel.setFont(new Font("Arial", Font.BOLD, 30));
 
@@ -99,7 +102,7 @@ public class RentBookDialog extends JDialog {
             }
         });
 
-        saveButton = new JButton("Alugar");
+        saveButton = new JButton(livro.getStatus().equals("Alugado") ? "Devolver" : "Alugar");
         saveButton.setBackground(Color.LIGHT_GRAY);
         saveButton.setForeground(Color.WHITE);
         saveButton.setFocusable(false);
@@ -108,11 +111,18 @@ public class RentBookDialog extends JDialog {
         saveButton.setBackground(new Color(0, 0, 139));
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String newStatus = "Alugado";
+                String newStatus = "";
+                if (livro.getStatus().equals("Alugado")) {
+                    newStatus = "Disponivel";
+                } else {
+                    newStatus = "Alugado";
+                }
+                livro.setStatus(newStatus);
                 tablePanel.editStatus(selectedRow, newStatus);
+                String successMessage = livro.getStatus().equals("Alugado") ? "Livro \"" + livro.getTitulo() + "\" Alugado com sucesso!" : "Livro \"" + livro.getTitulo() + "\" Devolvido com sucesso!";
                 SucessMessageDialog.showMessageDialog(
                         RentBookDialog.this,
-                        "Livro \"" + title + "\" Alugado com sucesso!",
+                        successMessage,
                         "Sucesso",
                         Color.BLUE,
                         Color.WHITE,
@@ -167,12 +177,16 @@ public class RentBookDialog extends JDialog {
         rentTimeLabel.setText("Tempo de locação máximo:   " + rentTime);
     }
 
+    public void setSelectedRow(int selectedRow) {
+        this.selectedRow = selectedRow;
+    }
+
     public void openRentBookDialog(int row) {
         this.selectedRow = row;
         int selectedModelRow = table.convertRowIndexToModel(row);
         Livro livro = livros.get(selectedModelRow);
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(table);
-        RentBookDialog rentBookDialog = new RentBookDialog(parentFrame, tablePanel, livro.getTitulo());
+        RentBookDialog rentBookDialog = new RentBookDialog(parentFrame, tablePanel, livro.getTitulo(), livro);
         rentBookDialog.setIsbnField(livro.getIsbn());
         rentBookDialog.setAuthorField(livro.getAutor());
         rentBookDialog.setCategoryComboBox(livro.getCategoria());
