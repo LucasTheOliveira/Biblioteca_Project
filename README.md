@@ -1,14 +1,3 @@
-/******************************************************************************
-* Copyright (c) [2024] [Lucas de O. Ribeiro da Silveira]
-*
-* Este software é fornecido "como está", sem garantia de qualquer tipo,
-* expressa ou implícita, incluindo, mas não se limitando a, garantias de
-* comercialização, adequação a uma finalidade específica e não infração.
-* Em nenhum caso os autores ou detentores de direitos autorais serão responsáveis
-* por qualquer reclamação, danos ou outras responsabilidades, seja em ação de
-* contrato, ação civil ou qualquer outro, decorrente de, ou em conexão com o
-* software ou o uso ou outras operações nos programas.
-******************************************************************************/
 
 (Logins da Aplicacao disponiveis):
 
