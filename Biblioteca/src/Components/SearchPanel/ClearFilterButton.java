@@ -9,7 +9,9 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class ClearFilterButton extends JButton {
+    @SuppressWarnings("unused")
     private JTextField searchField;
+    @SuppressWarnings("unused")
     private CustomTablePanel tablePanel;
 
     public ClearFilterButton(JTextField searchField, CustomTablePanel tablePanel) {

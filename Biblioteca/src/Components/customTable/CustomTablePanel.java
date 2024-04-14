@@ -122,7 +122,7 @@ public class CustomTablePanel extends JPanel {
         return tableConstraints;
     }
 
-    public void editBook(String isbn, String originalTitle, String newTitle, String author, String category, String status, String rentTime) {
+    public void editBook(String originalTitle, String newTitle, String isbn, String author, String category, String status, String rentTime) {
         for (Livro livro : livros) {
             if (livro.getTitulo().equals(originalTitle)) {
                 livro.setTitulo(newTitle);
@@ -292,10 +292,9 @@ public class CustomTablePanel extends JPanel {
                     int selectedRow = table.convertRowIndexToModel(row);
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(CustomTablePanel.this);
                     Livro livro = livros.get(selectedRow);
-
-                    livro.setStatus("Alugado");
             
-                    RentBookDialog rentBookDialog = new RentBookDialog(frame, CustomTablePanel.this, livro.getTitulo());
+                    RentBookDialog rentBookDialog = new RentBookDialog(frame, CustomTablePanel.this, livro.getTitulo(), livro);
+                    rentBookDialog.setSelectedRow(selectedRow);
                     rentBookDialog.setTitleField(livro.getTitulo());
                     rentBookDialog.setIsbnField(livro.getIsbn());
                     rentBookDialog.setAuthorField(livro.getAutor());
@@ -305,8 +304,6 @@ public class CustomTablePanel extends JPanel {
                     rentButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     rentButton.setFocusable(false);
                     rentBookDialog.setVisible(true);
-
-                    model.fireTableRowsUpdated(selectedRow, selectedRow);
                 }
             });
     

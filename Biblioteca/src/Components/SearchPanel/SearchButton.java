@@ -9,7 +9,9 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class SearchButton extends JButton {
+    @SuppressWarnings("unused")
     private CustomTablePanel tablePanel;
+    @SuppressWarnings("unused")
     private JTextField searchField;
 
     public SearchButton(JTextField searchField, CustomTablePanel tablePanel) {

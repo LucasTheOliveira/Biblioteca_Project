@@ -8,13 +8,11 @@ import Components.customTable.CustomTablePanel;
 import java.awt.*;
 import java.awt.event.*;
 
-// CLASSE DO INPUT DE PESQUISA
 public class SearchField extends JTextField {
     private CustomTablePanel tablePanel;
 
     public SearchField() {
         super(FlowLayout.LEFT);
-        this.tablePanel = tablePanel;
 
         setPlaceholder("Digite aqui para pesquisar...");
         setPreferredSize(new Dimension(400, 50));
