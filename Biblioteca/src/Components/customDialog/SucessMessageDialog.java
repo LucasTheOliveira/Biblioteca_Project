@@ -9,7 +9,8 @@ import java.util.TimerTask;
 public class SucessMessageDialog extends JDialog {
     private static JDialog dialog;
 
-    public SucessMessageDialog(Component parentComponent, Object message, String title, Color backgroundColor, Color textColor, Color borderColor, int fontSize) {
+    public SucessMessageDialog(Component parentComponent, Object message, String title, Color backgroundColor,
+            Color textColor, Color borderColor, int fontSize) {
         super((Frame) null, title, false);
         setAlwaysOnTop(true);
         setUndecorated(true);
@@ -34,8 +35,10 @@ public class SucessMessageDialog extends JDialog {
         setLocation(x, y);
     }
 
-    public static void showMessageDialog(Component parentComponent, Object message, String title, Color backgroundColor, Color textColor, Color borderColor, int fontSize) {
-        dialog = new SucessMessageDialog(parentComponent, message, title, backgroundColor, textColor, borderColor, fontSize);
+    public static void showMessageDialog(Component parentComponent, Object message, String title, Color backgroundColor,
+            Color textColor, Color borderColor, int fontSize) {
+        dialog = new SucessMessageDialog(parentComponent, message, title, backgroundColor, textColor, borderColor,
+                fontSize);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override

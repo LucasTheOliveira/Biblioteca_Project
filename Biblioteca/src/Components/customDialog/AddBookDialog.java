@@ -5,7 +5,7 @@ import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import Components.Enum.CategoryComponent;
+import Components.Conexão.ConexaoMysql;
 import Components.Enum.StatusComponent;
 import Components.customTable.CustomTablePanel;
 import Components.customTitle.BookListLabel;
@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.SQLException;
 
 public class AddBookDialog extends JDialog {
     private JTextField titleField;
@@ -34,8 +35,7 @@ public class AddBookDialog extends JDialog {
         this.isEditing = (originalTitle != null);
 
         StatusComponent staturComponent = new StatusComponent();
-        CategoryComponent categoryComponent = new CategoryComponent();
-        String[] bookOptions = categoryComponent.getBookOptions();
+        String[] bookOptions = getBookOptions();
         String[] statusOptions = staturComponent.getStatusOptions();
 
         setResizable(false);
@@ -210,38 +210,43 @@ public class AddBookDialog extends JDialog {
 
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String title = titleField.getText();
-                String isbn = isbnField.getText();
-                String author = authorField.getText();
-                String category = (String) categoryComboBox.getSelectedItem();
-                String status = (String) statusComboBox.getSelectedItem();
-                String rentTime = rentTimeField.getText().toString();
-                String rentTimeUnit = (String) rentTimeUnitComboBox.getSelectedItem();
-                String rentTimeString = rentTime + " " + rentTimeUnit;
+                try {
+                    String title = titleField.getText();
+                    String isbn = isbnField.getText();
+                    String author = authorField.getText();
+                    String category = (String) categoryComboBox.getSelectedItem();
+                    String status = (String) statusComboBox.getSelectedItem();
+                    String rentTime = rentTimeField.getText().toString();
+                    String rentTimeUnit = (String) rentTimeUnitComboBox.getSelectedItem();
+                    String rentTimeString = rentTime + " " + rentTimeUnit;
 
-                if (isEditing) {
-                    tablePanel.editBook(originalTitle, title, isbn, author, category, status, rentTimeString);
-                    SucessMessageDialog.showMessageDialog(
-                            AddBookDialog.this,
-                            "Livro \"" + title + "\" editado com sucesso!",
-                            "Sucesso",
-                            Color.BLUE,
-                            Color.WHITE,
-                            Color.BLACK,
-                            15);
-                } else {
-                    tablePanel.addBook(title, isbn, author, category, status, rentTimeString);
-                    SucessMessageDialog.showMessageDialog(
-                            AddBookDialog.this,
-                            "Livro \"" + title + "\" criado com sucesso!",
-                            "Sucesso",
-                            Color.GREEN,
-                            Color.BLACK,
-                            Color.BLACK,
-                            15);
+                    if (isEditing) {
+                        tablePanel.editBook(originalTitle, title, isbn, author, category, status, rentTimeString);
+                        SucessMessageDialog.showMessageDialog(
+                                AddBookDialog.this,
+                                "Livro \"" + title + "\" editado com sucesso!",
+                                "Sucesso",
+                                Color.BLUE,
+                                Color.WHITE,
+                                Color.BLACK,
+                                15);
+                    } else {
+                        String usuario_aluguel = null;
+                        tablePanel.addBook(isbn, title, author, category, status, rentTimeString, usuario_aluguel);
+                        SucessMessageDialog.showMessageDialog(
+                                AddBookDialog.this,
+                                "Livro \"" + title + "\" criado com sucesso!",
+                                "Sucesso",
+                                Color.GREEN,
+                                Color.BLACK,
+                                Color.BLACK,
+                                15);
+                    }
+
+                    dispose();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
-
-                dispose();
             }
         });
 
@@ -270,6 +275,12 @@ public class AddBookDialog extends JDialog {
         add(panel);
         setSize(900, 800);
         setLocationRelativeTo(parentFrame);
+    }
+
+    public String[] getBookOptions() {
+        ConexaoMysql conexao = new ConexaoMysql();
+        conexao.OpenDataBase();
+        return conexao.getBookOptions();
     }
 
     public void setTitleField(String title) {
