@@ -2,20 +2,24 @@ package Components.customDialog;
 
 import javax.swing.*;
 
+import Components.Conexão.ConexaoMysql;
 import Components.Enum.Livro;
 import Components.customTable.CustomTablePanel;
+import loginScreen.CurrentUser;
 
 import java.awt.*;
 import java.util.List;
 import java.awt.event.*;
+import java.sql.SQLException;
 
 public class RentBookDialog extends JDialog {
     private JLabel titleLabel;
     private JLabel authorLabel;
     private JLabel categoryLabel;
-    private int selectedRow;
     private JLabel isbnLabel;
     private JLabel rentTimeLabel;
+    private JLabel rentedByLabel;
+    private int selectedRow;
     private JButton saveButton;
     private CustomTablePanel tablePanel;
     private List<Livro> livros;
@@ -43,12 +47,14 @@ public class RentBookDialog extends JDialog {
         gbc.insets = new Insets(10, 10, 20, 10);
         Font labelFont = new Font("Arial", Font.BOLD, 20);
 
+        rentedByLabel = createLabel("Alugado por: ");
         titleLabel = createLabel("Título:          ");
         authorLabel = createLabel("Autor:          ");
         categoryLabel = createLabel("Categoria:          ");
         isbnLabel = createLabel("ISBN:          ");
         rentTimeLabel = createLabel("Tempo de locação máximo:          ");
 
+        rentedByLabel.setFont(labelFont);
         titleLabel.setFont(labelFont);
         authorLabel.setFont(labelFont);
         categoryLabel.setFont(labelFont);
@@ -69,8 +75,14 @@ public class RentBookDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 20, 50, 20);
+        if (livro.getStatus().equals("Alugado")) {
+            gbc.insets = new Insets(0, 20, 40, 20);
+        } else {
+            gbc.insets = new Insets(0, 20, 50, 20);
+        }
 
+        panel.add(rentedByLabel, gbc);
+        gbc.gridy++;
         panel.add(titleLabel, gbc);
         gbc.gridy++;
         panel.add(authorLabel, gbc);
@@ -109,17 +121,53 @@ public class RentBookDialog extends JDialog {
         saveButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         saveButton.setPreferredSize(new Dimension(120, 40));
         saveButton.setBackground(new Color(0, 0, 139));
+        CurrentUser currentUser = CurrentUser.getInstance();
+        String rentedBy = livro.getUsuarioAluguel();
+        String username = currentUser.getUsername();
+        if (livro.getStatus().equals("Alugado") && !username.equals(rentedBy) && !username.equals("admin")) {
+            saveButton.setEnabled(false);
+            saveButton.setBackground(Color.GRAY);
+        }
+
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String newStatus = "";
+                CurrentUser currentUser = CurrentUser.getInstance();
+                String username = currentUser.getUsername();
+                ConexaoMysql conexao = new ConexaoMysql();
+                conexao.OpenDataBase();
+
                 if (livro.getStatus().equals("Alugado")) {
                     newStatus = "Disponivel";
                 } else {
                     newStatus = "Alugado";
                 }
                 livro.setStatus(newStatus);
+
+                if (newStatus.equals("Disponivel")) {
+                    List<String> rentedBooks = conexao.getRentedBooks(username);
+                    rentedBooks.remove(livro.getTitulo());
+                    conexao.updateRentedBooks(username, rentedBooks);
+                    livro.setUsuarioAluguel(null);
+                } else {
+                    List<String> rentedBooks = conexao.getRentedBooks(username);
+                    rentedBooks.add(livro.getTitulo());
+                    conexao.updateRentedBooks(username, rentedBooks);
+                    livro.setUsuarioAluguel(username);
+                }
+
+                conexao.atualizarLivro(livro);
+
+                try {
+                    conexao.CloseDatabase();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+
                 tablePanel.editStatus(selectedRow, newStatus);
-                String successMessage = livro.getStatus().equals("Alugado") ? "Livro \"" + livro.getTitulo() + "\" Alugado com sucesso!" : "Livro \"" + livro.getTitulo() + "\" Devolvido com sucesso!";
+                String successMessage = livro.getStatus().equals("Alugado")
+                        ? "Livro \"" + livro.getTitulo() + "\" Alugado com sucesso!"
+                        : "Livro \"" + livro.getTitulo() + "\" Devolvido com sucesso!";
                 SucessMessageDialog.showMessageDialog(
                         RentBookDialog.this,
                         successMessage,
@@ -151,6 +199,13 @@ public class RentBookDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    private boolean isCurrentUserOwnerOrAdmin() {
+        CurrentUser currentUser = CurrentUser.getInstance();
+        String username = currentUser.getUsername();
+
+        return username.equals(livro.getUsuarioAluguel()) || currentUser.isAdmin();
+    }
+
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.BOLD, 15));
@@ -159,6 +214,12 @@ public class RentBookDialog extends JDialog {
 
     public void setTitleField(String titulo) {
         titleLabel.setText("Título:   " + titulo);
+        if (livro.getStatus().equals("Alugado")) {
+            rentedByLabel.setText("Alugado por: " + livro.getUsuarioAluguel());
+            rentedByLabel.setVisible(true);
+        } else {
+            rentedByLabel.setVisible(false);
+        }
     }
 
     public void setAuthorField(String author) {

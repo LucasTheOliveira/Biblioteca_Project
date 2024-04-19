@@ -8,18 +8,17 @@ import java.awt.event.*;
 public class CustomDeleteConfirmationDialog extends JDialog {
     private boolean confirmed = false;
 
-    public CustomDeleteConfirmationDialog(JFrame parent, String bookName) {
+    public CustomDeleteConfirmationDialog(JFrame parent, String message, ImageIcon icon) {
         super(parent, "", true);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setUndecorated(true);
         getContentPane().setBackground(Color.WHITE);
 
-        ImageIcon trashIcon = resizeIcon(new ImageIcon(getClass().getResource("/icons/delete.png")));
-        JLabel iconLabel = new JLabel(trashIcon);
+        JLabel iconLabel = new JLabel(resizeIcon(icon));
         iconLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-        JLabel label = new JLabel("Tem certeza de que deseja deletar o livro \"" + bookName + "\"?");
+        JLabel label = new JLabel(message);
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 18));
 
@@ -60,8 +59,7 @@ public class CustomDeleteConfirmationDialog extends JDialog {
         JPanel contentPane = new JPanel(new BorderLayout(10, 10));
         contentPane.setBorder(new CompoundBorder(
                 BorderFactory.createLineBorder(Color.BLACK, 2),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)));
         contentPane.setBackground(Color.WHITE);
         contentPane.add(iconPanel, BorderLayout.NORTH);
         contentPane.add(label, BorderLayout.CENTER);

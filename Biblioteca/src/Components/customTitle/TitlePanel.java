@@ -3,11 +3,16 @@ package Components.customTitle;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import Components.customDialog.CustomDeleteConfirmationDialog;
+import loginScreen.LoginScreen;
+
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class TitlePanel extends JPanel {
 
-    public TitlePanel() {
+    public TitlePanel(JFrame parentFrame, boolean isAdmin) {
         setLayout(new BorderLayout());
         setBackground(new Color(0, 120, 215));
         setPreferredSize(new Dimension(getPreferredSize().width, 40));
@@ -28,14 +33,32 @@ public class TitlePanel extends JPanel {
         logoutButton.setFocusable(false);
         logoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         logoutButton.setToolTipText("Logout");
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CustomDeleteConfirmationDialog confirmationDialog = new CustomDeleteConfirmationDialog(null,
+                        "Tem certeza que deseja deslogar?",
+                        new ImageIcon(getClass().getResource("/icons/logout.png")));
 
-        userListButton.setBackground(Color.WHITE);
-        userListButton.setFocusable(false);
-        userListButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        userListButton.setToolTipText("Lista de Usuários");
+                confirmationDialog.setVisible(true);
+
+                if (confirmationDialog.isConfirmed()) {
+                    parentFrame.dispose();
+                    LoginScreen loginScreen = new LoginScreen();
+                    loginScreen.setVisible(true);
+                }
+            }
+        });
+
+        if (isAdmin) {
+            userListButton.setBackground(Color.WHITE);
+            userListButton.setFocusable(false);
+            userListButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            userListButton.setToolTipText("Lista de Usuários");
+            buttonPanel.add(userListButton);
+        }
 
         buttonPanel.add(logoutButton);
-        buttonPanel.add(userListButton);
         buttonPanel.setBorder(new EmptyBorder(0, 0, 0, 80));
 
         add(buttonPanel, BorderLayout.EAST);

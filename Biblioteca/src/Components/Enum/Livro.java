@@ -8,8 +8,10 @@ public class Livro {
     private String categoria;
     private String status;
     private String rentTime;
+    private String usuario_aluguel;
 
-    public Livro(int id, String isbn, String titulo, String autor, String categoria, String status, String rentTime) {
+    public Livro(int id, String isbn, String titulo, String autor, String categoria, String status, String rentTime,
+            String usuario_aluguel) {
         this.id = id;
         this.isbn = isbn;
         this.titulo = titulo;
@@ -17,6 +19,7 @@ public class Livro {
         this.categoria = categoria;
         this.status = status;
         this.rentTime = rentTime;
+        this.usuario_aluguel = usuario_aluguel;
     }
 
     public int getId() {
@@ -73,5 +76,13 @@ public class Livro {
 
     public void setRentTime(String rentTime) {
         this.rentTime = rentTime;
+    }
+
+    public String getUsuarioAluguel() {
+        return usuario_aluguel;
+    }
+
+    public void setUsuarioAluguel(String usuario_aluguel) {
+        this.usuario_aluguel = usuario_aluguel;
     }
 }

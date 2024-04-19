@@ -23,7 +23,8 @@ public class CustomTableModel extends DefaultTableModel {
     private void updateTableModel() {
         setRowCount(0);
         for (Livro livro : livros) {
-            addRow(new Object[] { livro.getId(), livro.getIsbn(), livro.getTitulo(), livro.getAutor(), livro.getCategoria(), livro.getStatus() });
+            addRow(new Object[] { livro.getId(), livro.getIsbn(), livro.getTitulo(), livro.getAutor(),
+                    livro.getCategoria(), livro.getStatus() });
         }
     }
 
