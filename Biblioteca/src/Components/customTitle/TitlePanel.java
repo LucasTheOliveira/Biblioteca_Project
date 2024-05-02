@@ -5,17 +5,21 @@ import javax.swing.border.EmptyBorder;
 
 import Components.customDialog.CustomDeleteConfirmationDialog;
 import loginScreen.LoginScreen;
+import mainScreen.MainScreen;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class TitlePanel extends JPanel {
+    private MainScreen mainScreen;
 
-    public TitlePanel(JFrame parentFrame, boolean isAdmin) {
+    public TitlePanel(JFrame parentFrame, boolean isAdmin, MainScreen mainScreen) {
         setLayout(new BorderLayout());
         setBackground(new Color(0, 120, 215));
         setPreferredSize(new Dimension(getPreferredSize().width, 40));
+
+        this.mainScreen = mainScreen;
 
         JLabel titleLabel = new JLabel("Biblioteca UNAERP");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -44,7 +48,7 @@ public class TitlePanel extends JPanel {
 
                 if (confirmationDialog.isConfirmed()) {
                     parentFrame.dispose();
-                    LoginScreen loginScreen = new LoginScreen();
+                    LoginScreen loginScreen = new LoginScreen(mainScreen);
                     loginScreen.setVisible(true);
                 }
             }
