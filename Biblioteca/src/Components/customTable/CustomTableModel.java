@@ -24,7 +24,7 @@ public class CustomTableModel extends DefaultTableModel {
         setRowCount(0);
         for (Livro livro : livros) {
             addRow(new Object[] { livro.getId(), livro.getIsbn(), livro.getTitulo(), livro.getAutor(),
-                    livro.getCategoria(), livro.getStatus() });
+                    livro.getCategoria(), livro.getStatus(), null });
         }
     }
 

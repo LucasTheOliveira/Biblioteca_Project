@@ -173,6 +173,7 @@ public class CustomTablePanel extends JPanel {
         rowData.add("");
 
         model.addRow(rowData);
+        searchInTable("");
     }
 
     private int getNextID() {
@@ -325,16 +326,20 @@ public class CustomTablePanel extends JPanel {
             deleteButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     String bookTitle = (String) model.getValueAt(row, 2);
-
+            
                     CustomDeleteConfirmationDialog confirmationDialog = new CustomDeleteConfirmationDialog(null,
                             "Tem certeza de que deseja deletar o livro \"" + bookTitle + "\"?",
                             new ImageIcon(getClass().getResource("/icons/delete.png")));
                     confirmationDialog.setVisible(true);
-
+            
                     if (confirmationDialog.isConfirmed()) {
+                        if (table.isEditing()) {
+                            table.getCellEditor().cancelCellEditing();
+                        }
+            
                         int selectedRow = table.convertRowIndexToModel(row);
                         Livro livroRemovido = livros.get(selectedRow);
-
+            
                         try {
                             ConexaoMysql conexao = new ConexaoMysql();
                             conexao.OpenDataBase();
@@ -342,14 +347,13 @@ public class CustomTablePanel extends JPanel {
                             conexao.CloseDatabase();
                         } catch (SQLException ex) {
                             ex.printStackTrace();
-                            // Lidar com o erro ao excluir o livro do banco de dados
                         }
-
-                        // Remover o livro da lista e da tabela
+            
                         model.removeRow(selectedRow);
                         livros.remove(selectedRow);
+                        searchInTable("");
                         Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(deleteButton);
-
+            
                         SucessMessageDialog.showMessageDialog(parentFrame,
                                 "Livro \"" + livroRemovido.getTitulo() + "\" deletado com sucesso!",
                                 "Sucesso",

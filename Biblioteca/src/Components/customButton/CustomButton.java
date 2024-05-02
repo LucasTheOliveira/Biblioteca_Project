@@ -6,17 +6,21 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 
+import mainScreen.MainScreen;
 import Components.customDialog.AddBookDialog;
 import Components.customTable.CustomTablePanel;
 
 public class CustomButton extends JButton {
+    @SuppressWarnings("unused")
     private CustomTablePanel tablePanel;
-
-    public CustomButton(CustomTablePanel tablePanel) {
+    @SuppressWarnings("unused")
+    private MainScreen mainScreen;
+    
+    public CustomButton(CustomTablePanel tablePanel, MainScreen mainScreen) {
         super("+ Adicionar Livro");
         this.tablePanel = tablePanel;
+        this.mainScreen = mainScreen;
 
-        setToolTipText("Adicionar Livro");
         setFocusable(false);
         setFont(new Font("Arial", Font.BOLD, 15));
         setPreferredSize(new Dimension(250, 70));
@@ -25,10 +29,13 @@ public class CustomButton extends JButton {
         setContentAreaFilled(false);
         setBorder(new EmptyBorder(10, 20, 10, 20));
         setCursor(new Cursor(Cursor.HAND_CURSOR));
+        setToolTipText("Adicionar Livro");
 
         addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                openAddBookDialog();
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(tablePanel);
+                AddBookDialog addBookDialog = new AddBookDialog(frame, tablePanel, null);
+                addBookDialog.setVisible(true);
             }
         });
     }
@@ -40,12 +47,6 @@ public class CustomButton extends JButton {
         buttonConstraints.anchor = GridBagConstraints.LINE_END;
         buttonConstraints.insets = new Insets(20, 20, 0, 30);
         return buttonConstraints;
-    }
-
-    private void openAddBookDialog() {
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(tablePanel);
-        AddBookDialog addBookDialog = new AddBookDialog(frame, tablePanel, null);
-        addBookDialog.setVisible(true);
     }
 
     protected void paintComponent(Graphics g) {

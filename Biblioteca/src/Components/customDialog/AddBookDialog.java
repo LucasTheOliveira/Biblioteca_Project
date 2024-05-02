@@ -34,9 +34,9 @@ public class AddBookDialog extends JDialog {
         super(parentFrame, "", true);
         this.isEditing = (originalTitle != null);
 
-        StatusComponent staturComponent = new StatusComponent();
+        StatusComponent statusComponent = new StatusComponent();
         String[] bookOptions = getBookOptions();
-        String[] statusOptions = staturComponent.getStatusOptions();
+        String[] statusOptions = statusComponent.getStatusOptions();
 
         setResizable(false);
         getContentPane().setBackground(Color.WHITE);
@@ -232,7 +232,7 @@ public class AddBookDialog extends JDialog {
                                 15);
                     } else {
                         String usuario_aluguel = null;
-                        tablePanel.addBook(isbn, title, author, category, status, rentTimeString, usuario_aluguel);
+                        tablePanel.addBook(title, isbn, author, category, status, rentTimeString, usuario_aluguel);
                         SucessMessageDialog.showMessageDialog(
                                 AddBookDialog.this,
                                 "Livro \"" + title + "\" criado com sucesso!",

@@ -10,10 +10,20 @@ import Components.SearchPanel.*;
 import Components.customButton.*;
 import Components.customTable.*;
 import Components.customTitle.*;
+import Components.userTable.UserTable;
 import Components.Conexão.ConexaoMysql;
 import Components.Enum.Livro;
+import Components.Enum.Usuario;
 
 public class MainScreen extends JFrame {
+    private CustomTablePanel tablePanel;
+    private UserTable userTablePanel;
+    private CustomButton addButton;
+    private AddUserButton addUserButton;
+    private BookListLabel bookListLabel;
+    private boolean userTableOn;
+    private boolean bookTableOn;
+
     public MainScreen(boolean admin) {
         setTitle("Biblioteca UNAERP");
         setSize(1920, 1080);
@@ -28,42 +38,56 @@ public class MainScreen extends JFrame {
         getContentPane().add(mainPanel);
 
         // Label title "Biblioteca unaerp"
-        TitlePanel titlePanel = new TitlePanel(this, admin);
+        TitlePanel titlePanel = new TitlePanel(this, admin, this);
         mainPanel.add(titlePanel, titlePanel.getConstraints());
 
         // Label "Lista de Livros"
-        BookListLabel bookListLabel = new BookListLabel("");
+        bookListLabel = new BookListLabel("");
         bookListLabel.setText("Lista de Livros");
         GridBagConstraints bookListconstraints = bookListLabel.getConstraints(0, 1, GridBagConstraints.WEST,
                 new Insets(10, 20, 0, 0));
         mainPanel.add(bookListLabel, bookListconstraints);
 
         // Campo de Pesquisa
-        SearchField searchField = new SearchField();
+        SearchField searchField = new SearchField(this);
         mainPanel.add(searchField, searchField.getConstraints());
 
         // Tabela de Livros
         conexao.OpenDataBase();
         List<Livro> livros = conexao.getLivros();
-        CustomTablePanel tablePanel = new CustomTablePanel(admin, livros);
+        tablePanel = new CustomTablePanel(admin, livros);
         tablePanel.setAdmin(admin);
         mainPanel.add(tablePanel, tablePanel.getConstraints());
 
+        // Tabela de Livros
+        conexao.OpenDataBase();
+        List<Usuario> usuarios = conexao.getUsers();
+        userTablePanel = new UserTable(admin, usuarios);
+        userTablePanel.setAdmin(admin);
+        mainPanel.add(userTablePanel, userTablePanel.getConstraints());
+
         // Botão "Limpar filtro"
-        ClearFilterButton clearFilterButton = new ClearFilterButton(searchField, tablePanel);
+        ClearFilterButton clearFilterButton = new ClearFilterButton(searchField, tablePanel, userTablePanel, this);
         clearFilterButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         mainPanel.add(clearFilterButton, clearFilterButton.getConstraints());
 
         // Botão "Pesquisa"
-        SearchButton searchButton = new SearchButton(searchField, tablePanel);
+        SearchButton searchButton = new SearchButton(searchField, tablePanel, userTablePanel, this);
         searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         mainPanel.add(searchButton, searchButton.getConstraints());
 
         // Botão "Adicionar Livro"
-        CustomButton addButton = new CustomButton(tablePanel);
+        addButton = new CustomButton(tablePanel, this);
         addButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         if (admin) {
             mainPanel.add(addButton, addButton.getConstraints());
+        }
+
+        // Botão "Adicionar Usuario"
+        addUserButton = new AddUserButton(userTablePanel, this);
+        addUserButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        if (admin) {
+            mainPanel.add(addUserButton, addUserButton.getConstraints());
         }
 
         conexao.OpenDataBase();
@@ -86,5 +110,39 @@ public class MainScreen extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void showUserTable() {
+        tablePanel.setVisible(false);
+        userTablePanel.setVisible(true);
+        addUserButton.setVisible(true);
+        addButton.setVisible(false);
+        bookListLabel.setText("Lista de Usuários");
+        userTableOn = true;
+    }
+
+    public void showBookTable() {
+        tablePanel.setVisible(true);
+        userTablePanel.setVisible(false);
+        addUserButton.setVisible(false);
+        addButton.setVisible(true);
+        bookListLabel.setText("Lista de Livros");
+        userTableOn = false;
+    }
+
+    public boolean isUserTableOn() {
+        return userTableOn;
+    }
+
+    public void setUserTableOn(boolean userTableOn) {
+        this.userTableOn = userTableOn;
+    }
+
+    public boolean isBookTableOn() {
+        return bookTableOn;
+    }
+
+    public void setBookTableOn(boolean bookTableOn) {
+        this.bookTableOn = bookTableOn;
     }
 }

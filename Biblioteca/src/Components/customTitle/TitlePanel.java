@@ -5,17 +5,24 @@ import javax.swing.border.EmptyBorder;
 
 import Components.customDialog.CustomDeleteConfirmationDialog;
 import loginScreen.LoginScreen;
+import mainScreen.MainScreen;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class TitlePanel extends JPanel {
+    @SuppressWarnings("unused")
+    private MainScreen mainScreen;
+    private JButton userListButton;
+    private JButton logoutButton;
 
-    public TitlePanel(JFrame parentFrame, boolean isAdmin) {
+    public TitlePanel(JFrame parentFrame, boolean isAdmin, MainScreen mainScreen) {
         setLayout(new BorderLayout());
         setBackground(new Color(0, 120, 215));
         setPreferredSize(new Dimension(getPreferredSize().width, 40));
+
+        this.mainScreen = mainScreen;
 
         JLabel titleLabel = new JLabel("Biblioteca UNAERP");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -26,9 +33,8 @@ public class TitlePanel extends JPanel {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setOpaque(false);
-        JButton logoutButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/logout.png"))));
-        JButton userListButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/user.png"))));
 
+        logoutButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/logout.png"))));
         logoutButton.setBackground(Color.WHITE);
         logoutButton.setFocusable(false);
         logoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -44,17 +50,30 @@ public class TitlePanel extends JPanel {
 
                 if (confirmationDialog.isConfirmed()) {
                     parentFrame.dispose();
-                    LoginScreen loginScreen = new LoginScreen();
+                    LoginScreen loginScreen = new LoginScreen(mainScreen);
                     loginScreen.setVisible(true);
                 }
             }
         });
 
         if (isAdmin) {
+            userListButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource(mainScreen.isUserTableOn() ? "/icons/user.png" : "/icons/livro.png"))));
             userListButton.setBackground(Color.WHITE);
             userListButton.setFocusable(false);
             userListButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             userListButton.setToolTipText("Lista de Usuários");
+            userListButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if(!mainScreen.isUserTableOn()) {
+                        mainScreen.showUserTable();
+                        userListButton.setIcon(resizeIcon(new ImageIcon(getClass().getResource("/icons/livro.png"))));
+                    } else {
+                        mainScreen.showBookTable();
+                        userListButton.setIcon(resizeIcon(new ImageIcon(getClass().getResource("/icons/user.png"))));
+                    }
+                }
+            });
             buttonPanel.add(userListButton);
         }
 
