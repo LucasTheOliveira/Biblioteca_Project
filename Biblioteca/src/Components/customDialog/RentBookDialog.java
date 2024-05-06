@@ -24,7 +24,6 @@ public class RentBookDialog extends JDialog {
     private CustomTablePanel tablePanel;
     private List<Livro> livros;
     private JTable table;
-    @SuppressWarnings("unused")
     private Livro livro;
 
     public RentBookDialog(JFrame parent, CustomTablePanel tablePanel, String title, Livro livro) {
@@ -197,13 +196,6 @@ public class RentBookDialog extends JDialog {
 
         getContentPane().add(panel, BorderLayout.WEST);
         add(buttonPanel, BorderLayout.SOUTH);
-    }
-
-    private boolean isCurrentUserOwnerOrAdmin() {
-        CurrentUser currentUser = CurrentUser.getInstance();
-        String username = currentUser.getUsername();
-
-        return username.equals(livro.getUsuarioAluguel()) || currentUser.isAdmin();
     }
 
     private JLabel createLabel(String text) {

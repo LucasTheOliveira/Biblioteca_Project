@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import Components.Enum.Livro;
+import Components.Enum.Usuario;
+import Components.Enum.UserType;
 
 public class ConexaoMysql {
     public static String URL = "jdbc:mysql://localhost:3306/biblioteca";
@@ -187,16 +189,77 @@ public class ConexaoMysql {
         }
     }
 
-    public void inserirUsuario(String nome, String senha) {
+    public void inserirUsuario(Usuario usuario) {
         try {
-            String sql = "INSERT INTO usuarios (nome, senha) VALUES (?, ?)";
+            String rentedBooksString = String.join("", usuario.getRentedBooks());
+            String tipoString = usuario.getTipo().getValue();
+
+            String sql = "INSERT INTO usuarios (nome, senha, tipo, rentedBooks) VALUES (?, ?, ?, ?)";
             PreparedStatement pstmt = dbconn.prepareStatement(sql);
-            pstmt.setString(1, nome);
-            pstmt.setString(2, senha);
+            pstmt.setString(1, usuario.getNome());
+            pstmt.setString(2, usuario.getSenha());
+            pstmt.setString(3, tipoString);
+            pstmt.setString(4, rentedBooksString);
             pstmt.executeUpdate();
             pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void deletarUsuario(Usuario usuario) {
+        try {
+            String sql = "DELETE FROM usuarios WHERE id=?";
+            PreparedStatement pstmt = dbconn.prepareStatement(sql);
+            pstmt.setInt(1, usuario.getId());
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void atualizarUsuario(Usuario usuario) {
+        try {
+            String rentedBooksString = String.join(",", usuario.getRentedBooks());
+            String tipoString = usuario.getTipo().getValue();
+
+            String sql = "UPDATE usuarios SET nome=?, senha=?, tipo=?, rentedBooks=? WHERE id=?";
+            PreparedStatement pstmt = dbconn.prepareStatement(sql);
+            pstmt.setString(1, usuario.getNome());
+            pstmt.setString(2, usuario.getSenha());
+            pstmt.setString(3, tipoString);
+            pstmt.setString(4, rentedBooksString);
+            pstmt.setInt(5, usuario.getId());
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Usuario> getUsers() {
+        List<String> rentedBooks = new ArrayList<>();
+        List<Usuario> usuarios = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM usuarios";
+            ResultSet resultSet = sqlmgr.executeQuery(sql);
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String nome = resultSet.getString("nome");
+                String rentedBooksString = resultSet.getString("rentedBooks");
+                if (rentedBooksString != null) {
+                    rentedBooks = Arrays.asList(rentedBooksString.split(","));
+                }
+                String tipoString = resultSet.getString("tipo");
+                UserType tipo = UserType.fromString(tipoString); 
+                String senha = resultSet.getString("senha");
+                Usuario usuario = new Usuario(id, nome, senha, tipo, rentedBooks);
+                usuarios.add(usuario);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return usuarios;
     }
 }

@@ -6,6 +6,8 @@ import javax.swing.border.Border;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 import Components.Conexão.ConexaoMysql;
 import java.awt.*;
 import java.awt.event.*;
@@ -13,12 +15,15 @@ import java.awt.event.*;
 public class LoginScreen extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
+    private JCheckBox showPasswordCheckBox;
+    @SuppressWarnings("unused")
     private MainScreen mainScreen;
+    @SuppressWarnings("unused")
     private boolean admin;
 
     public LoginScreen(MainScreen mainScreen) {
         setTitle("Login");
-        setSize(300, 390);
+        setSize(320, 390);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -47,6 +52,37 @@ public class LoginScreen extends JFrame {
         usernameField.setBorder(new RoundedBorder(10));
         setPlaceholder(usernameField, "Usuário");
         panel.add(usernameField);
+
+        showPasswordCheckBox = new JCheckBox(resizeIcon(new ImageIcon(getClass().getResource("/icons/olho.png"))));
+        showPasswordCheckBox.setBounds(280, 195, 30, 25);
+        showPasswordCheckBox.setBackground(Color.WHITE);
+        showPasswordCheckBox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (showPasswordCheckBox.isSelected()) {
+                    passwordField.setEchoChar((char) 0);
+                } else {
+                    passwordField.setEchoChar('*');
+                }
+                if (showPasswordCheckBox.isSelected()) {
+                    showPasswordCheckBox.setIcon(resizeIcon(new ImageIcon(getClass().getResource("/icons/invisivel.png"))));
+                } else {
+                    showPasswordCheckBox.setIcon(resizeIcon(new ImageIcon(getClass().getResource("/icons/olho.png"))));
+                }
+            }
+        });
+        
+        showPasswordCheckBox.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                showPasswordCheckBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                showPasswordCheckBox.setCursor(Cursor.getDefaultCursor());
+            }
+        });
+        panel.add(showPasswordCheckBox);
 
         JLabel passwordLabel = new JLabel("Senha:");
         passwordLabel.setBounds(25, 160, 100, 30);
@@ -129,7 +165,7 @@ public class LoginScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                RegistrarScreen registrarScreen = new RegistrarScreen(mainScreen);
+                RegistrarScreen registrarScreen = new RegistrarScreen(mainScreen, new ArrayList<>());
                 registrarScreen.setVisible(true);
             }
         });
@@ -139,6 +175,12 @@ public class LoginScreen extends JFrame {
             }
         });
         panel.add(registerButton);
+    }
+
+    private ImageIcon resizeIcon(ImageIcon icon) {
+        Image img = icon.getImage();
+        Image newImg = img.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+        return new ImageIcon(newImg);
     }
 
     private void setPlaceholder(JTextField textField, String placeholder) {

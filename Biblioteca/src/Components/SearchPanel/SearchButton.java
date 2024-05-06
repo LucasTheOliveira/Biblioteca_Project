@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import Components.customTable.CustomTablePanel;
+import Components.userTable.UserTable;
+import mainScreen.MainScreen;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -13,11 +15,17 @@ public class SearchButton extends JButton {
     private CustomTablePanel tablePanel;
     @SuppressWarnings("unused")
     private JTextField searchField;
+    @SuppressWarnings("unused")
+    private UserTable userTable;
+    @SuppressWarnings("unused")
+    private MainScreen mainScreen;
 
-    public SearchButton(JTextField searchField, CustomTablePanel tablePanel) {
+    public SearchButton(JTextField searchField, CustomTablePanel tablePanel, UserTable userTable, MainScreen mainScreen) {
         super("Pesquisar", resizeIcon(new ImageIcon(SearchButton.class.getResource("/icons/search_icon.png"))));
         this.searchField = searchField;
         this.tablePanel = tablePanel;
+        this.userTable = userTable;
+        this.mainScreen = mainScreen;
 
         setFocusable(false);
         setPreferredSize(new Dimension(100, 35));
@@ -27,7 +35,11 @@ public class SearchButton extends JButton {
         addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String searchTerm = searchField.getText();
-                tablePanel.searchInTable(searchTerm);
+                if(mainScreen.isUserTableOn()) {
+                    userTable.searchInUserTable(searchTerm);
+                } else {
+                    tablePanel.searchInTable(searchTerm);
+                }
             }
         });
     }

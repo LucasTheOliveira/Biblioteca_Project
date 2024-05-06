@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import Components.customTable.CustomTablePanel;
+import Components.userTable.UserTable;
+import mainScreen.MainScreen;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -12,12 +14,18 @@ public class ClearFilterButton extends JButton {
     @SuppressWarnings("unused")
     private JTextField searchField;
     @SuppressWarnings("unused")
+    private UserTable userTable;
+    @SuppressWarnings("unused")
+    private MainScreen mainScreen;
+    @SuppressWarnings("unused")
     private CustomTablePanel tablePanel;
 
-    public ClearFilterButton(JTextField searchField, CustomTablePanel tablePanel) {
+    public ClearFilterButton(JTextField searchField, CustomTablePanel tablePanel, UserTable userTable, MainScreen mainScreen) {
         super("Limpar Filtro", resizeIcon(new ImageIcon(SearchButton.class.getResource("/icons/borracha.png"))));
         this.searchField = searchField;
         this.tablePanel = tablePanel;
+        this.userTable = userTable;
+        this.mainScreen = mainScreen;
 
         setPreferredSize(new Dimension(120, 35));
         setFocusable(false);
@@ -27,7 +35,11 @@ public class ClearFilterButton extends JButton {
         addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 searchField.setText("");
-                tablePanel.searchInTable("");
+                if(mainScreen.isUserTableOn()) {
+                    userTable.searchInUserTable("");
+                } else {
+                    tablePanel.searchInTable("");
+                }
             }
         });
     }

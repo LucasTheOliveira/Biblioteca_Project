@@ -10,12 +10,16 @@ import Components.SearchPanel.*;
 import Components.customButton.*;
 import Components.customTable.*;
 import Components.customTitle.*;
+import Components.userTable.UserTable;
 import Components.Conexão.ConexaoMysql;
 import Components.Enum.Livro;
+import Components.Enum.Usuario;
 
 public class MainScreen extends JFrame {
     private CustomTablePanel tablePanel;
+    private UserTable userTablePanel;
     private CustomButton addButton;
+    private AddUserButton addUserButton;
     private BookListLabel bookListLabel;
     private boolean userTableOn;
     private boolean bookTableOn;
@@ -45,7 +49,7 @@ public class MainScreen extends JFrame {
         mainPanel.add(bookListLabel, bookListconstraints);
 
         // Campo de Pesquisa
-        SearchField searchField = new SearchField();
+        SearchField searchField = new SearchField(this);
         mainPanel.add(searchField, searchField.getConstraints());
 
         // Tabela de Livros
@@ -55,21 +59,35 @@ public class MainScreen extends JFrame {
         tablePanel.setAdmin(admin);
         mainPanel.add(tablePanel, tablePanel.getConstraints());
 
+        // Tabela de Livros
+        conexao.OpenDataBase();
+        List<Usuario> usuarios = conexao.getUsers();
+        userTablePanel = new UserTable(admin, usuarios);
+        userTablePanel.setAdmin(admin);
+        mainPanel.add(userTablePanel, userTablePanel.getConstraints());
+
         // Botão "Limpar filtro"
-        ClearFilterButton clearFilterButton = new ClearFilterButton(searchField, tablePanel);
+        ClearFilterButton clearFilterButton = new ClearFilterButton(searchField, tablePanel, userTablePanel, this);
         clearFilterButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         mainPanel.add(clearFilterButton, clearFilterButton.getConstraints());
 
         // Botão "Pesquisa"
-        SearchButton searchButton = new SearchButton(searchField, tablePanel);
+        SearchButton searchButton = new SearchButton(searchField, tablePanel, userTablePanel, this);
         searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         mainPanel.add(searchButton, searchButton.getConstraints());
 
         // Botão "Adicionar Livro"
-        addButton = new CustomButton(tablePanel);
+        addButton = new CustomButton(tablePanel, this);
         addButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         if (admin) {
             mainPanel.add(addButton, addButton.getConstraints());
+        }
+
+        // Botão "Adicionar Usuario"
+        addUserButton = new AddUserButton(userTablePanel, this);
+        addUserButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        if (admin) {
+            mainPanel.add(addUserButton, addUserButton.getConstraints());
         }
 
         conexao.OpenDataBase();
@@ -96,6 +114,8 @@ public class MainScreen extends JFrame {
 
     public void showUserTable() {
         tablePanel.setVisible(false);
+        userTablePanel.setVisible(true);
+        addUserButton.setVisible(true);
         addButton.setVisible(false);
         bookListLabel.setText("Lista de Usuários");
         userTableOn = true;
@@ -103,6 +123,8 @@ public class MainScreen extends JFrame {
 
     public void showBookTable() {
         tablePanel.setVisible(true);
+        userTablePanel.setVisible(false);
+        addUserButton.setVisible(false);
         addButton.setVisible(true);
         bookListLabel.setText("Lista de Livros");
         userTableOn = false;

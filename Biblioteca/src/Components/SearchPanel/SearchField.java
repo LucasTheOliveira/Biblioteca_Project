@@ -4,26 +4,35 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import Components.customTable.CustomTablePanel;
+import mainScreen.MainScreen;
+import Components.userTable.UserTable;
 
 import java.awt.*;
 import java.awt.event.*;
 
 public class SearchField extends JTextField {
     private CustomTablePanel tablePanel;
+    private UserTable userTable;
+    @SuppressWarnings("unused")
+    private MainScreen mainScreen;
 
-    public SearchField() {
+    public SearchField(MainScreen mainScreen) {
         super(FlowLayout.LEFT);
-
         setPlaceholder("Digite aqui para pesquisar...");
         setPreferredSize(new Dimension(400, 50));
         setBorder(new RoundedBorder(10));
         setBackground(Color.WHITE);
+        this.mainScreen = mainScreen;
 
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String searchTerm = getText();
-                tablePanel.searchInTable(searchTerm);
+                if(mainScreen.isUserTableOn()) {
+                    userTable.searchInUserTable(searchTerm);
+                } else {                    
+                    tablePanel.searchInTable(searchTerm);
+                }
             }
         });
     }

@@ -1,61 +1,72 @@
-package loginScreen;
+package Components.customDialog;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import Components.Enum.Usuario;
-import java.util.List;
+import Components.userTable.UserTable;
 import Components.Enum.UserType;
 
-import Components.Conexão.ConexaoMysql;
-
-import mainScreen.MainScreen;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
+import java.sql.SQLException;
 
-public class RegistrarScreen extends JFrame {
+public class AddUserDialog extends JDialog {
     public JTextField usernameField;
     public JPasswordField passwordField;
+    private JComboBox<UserType> typeComboBox;
     private JCheckBox showPasswordCheckBox;
-    @SuppressWarnings("unused")
-    private MainScreen mainScreen;
-    private List<Usuario> usuarios;
+    public UserTable userTablePanel;
+    public Boolean isEditing;
 
-    public RegistrarScreen(MainScreen mainScreen, List<Usuario> usuarios) {
-        setTitle("Registrar");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public AddUserDialog(JFrame parentFrame, UserTable userTablePanel, String originalName) {
+        super(parentFrame, "", true);
+        this.isEditing = (originalName != null);
+        this.userTablePanel = userTablePanel;
+
+        setTitle(isEditing ? "Editar Usuario" : "Registrar");
         setLayout(new BorderLayout());
         setResizable(false);
+        setUndecorated(true);
+        setSize(420, 480);
 
-        this.usuarios = usuarios != null ? usuarios : new ArrayList<>();
-        this.mainScreen = mainScreen;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+        int dialogWidth = getWidth();
+        int dialogHeight = getHeight();
+        int x = (screenWidth - dialogWidth) / 2;
+        int y = (screenHeight - dialogHeight) / 2;
+
+        setLocation(x, y);
 
         JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         panel.setBackground(Color.WHITE);
         getContentPane().add(panel);
         panel.setLayout(null);
 
         JLabel titleLabel = new JLabel("Registrar");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        titleLabel.setBounds(20, 20, 250, 45);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 40));
+        titleLabel.setBounds(50, 20, 300, 60);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setForeground(new Color(0, 0, 139));
         panel.add(titleLabel);
 
-        JLabel userLabel = new JLabel("Usuário:");
+        JLabel userLabel = new JLabel("Usuário");
         userLabel.setBounds(25, 90, 100, 30);
-        userLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        userLabel.setFont(new Font("Arial", Font.BOLD, 20));
         panel.add(userLabel);
 
         usernameField = new JTextField();
-        usernameField.setBounds(25, 120, 250, 35);
+        usernameField.setBounds(25, 130, 350, 35);
         usernameField.setBorder(new RoundedBorder(10));
         setPlaceholder(usernameField, "Usuário");
         panel.add(usernameField);
 
         showPasswordCheckBox = new JCheckBox(resizeIcon(new ImageIcon(getClass().getResource("/icons/olho.png"))));
-        showPasswordCheckBox.setBounds(280, 195, 30, 25);
+        showPasswordCheckBox.setBounds(380, 225, 30, 25);
         showPasswordCheckBox.setBackground(Color.WHITE);
         showPasswordCheckBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -65,20 +76,19 @@ public class RegistrarScreen extends JFrame {
                     passwordField.setEchoChar('*');
                 }
                 if (showPasswordCheckBox.isSelected()) {
-                    showPasswordCheckBox
-                            .setIcon(resizeIcon(new ImageIcon(getClass().getResource("/icons/invisivel.png"))));
+                    showPasswordCheckBox.setIcon(resizeIcon(new ImageIcon(getClass().getResource("/icons/invisivel.png"))));
                 } else {
                     showPasswordCheckBox.setIcon(resizeIcon(new ImageIcon(getClass().getResource("/icons/olho.png"))));
                 }
             }
         });
-
+        
         showPasswordCheckBox.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 showPasswordCheckBox.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
-
+            
             @Override
             public void mouseExited(MouseEvent e) {
                 showPasswordCheckBox.setCursor(Cursor.getDefaultCursor());
@@ -86,35 +96,39 @@ public class RegistrarScreen extends JFrame {
         });
         panel.add(showPasswordCheckBox);
 
-        JLabel passwordLabel = new JLabel("Senha:");
-        passwordLabel.setBounds(25, 160, 100, 30);
-        passwordLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        JLabel passwordLabel = new JLabel("Senha");
+        passwordLabel.setBounds(25, 180, 100, 30);
+        passwordLabel.setFont(new Font("Arial", Font.BOLD, 20));
         panel.add(passwordLabel);
-
+        
         passwordField = new JPasswordField();
-        passwordField.setBounds(25, 190, 250, 35);
+        passwordField.setBounds(25, 220, 350, 35);
         passwordField.setBorder(new RoundedBorder(10));
-        passwordField.setEchoChar((char) 0);
+        passwordField.setEchoChar('*');
         setPlaceholder(passwordField, "Senha");
         panel.add(passwordField);
 
-        JSeparator separator = new JSeparator();
-        separator.setBounds(0, 300, 300, 10);
-        separator.setForeground(new Color(180, 180, 180));
+        JLabel typeLabel = new JLabel("Tipo");
+        typeLabel.setBounds(25, 270, 100, 30);
+        typeLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        panel.add(typeLabel);
 
-        int larguraJanela = 300;
-        int alturaJanela = mainScreen.isUserTableOn() ? 350 : 390;
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int larguraTela = (int) screenSize.getWidth();
-        int alturaTela = (int) screenSize.getHeight();
-        int posX = (larguraTela - larguraJanela) / 2;
-        int posY = (alturaTela - alturaJanela) / 2;
-        setLocation(posX, posY);
+        typeComboBox = new JComboBox();
+        typeComboBox.setBounds(25, 310, 350, 45);
+        typeComboBox.setBorder(new RoundedBorder(10));
+        typeComboBox.setFocusable(false);
+        typeComboBox.setFont(new Font("Arial", Font.BOLD, 15));
+        typeComboBox.setBackground(Color.WHITE);
+        panel.add(typeComboBox);
+        for (UserType userType : UserType.values()) {
+            typeComboBox.addItem(userType);
+        }
 
         JButton cancelButton = new JButton("Cancelar");
         cancelButton.setBackground(new Color(230, 230, 230));
         cancelButton.setForeground(Color.BLACK);
-        cancelButton.setFont(new Font("Arial", Font.BOLD, 15));
+        cancelButton.setFont(new Font("Arial", Font.BOLD, 20));
+        cancelButton.setBounds(220, 400, 150, 40);
         cancelButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 cancelButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -127,53 +141,46 @@ public class RegistrarScreen extends JFrame {
             }
         });
 
-        JButton loginButton = new JButton("Login");
-        loginButton.setBounds(100, 315, 100, 30);
-        loginButton.setBackground(Color.WHITE);
-        loginButton.setFont(new Font("Arial", Font.BOLD, 15));
-        loginButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                loginButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            }
-        });
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                LoginScreen loginScreen = new LoginScreen(mainScreen);
-                loginScreen.setVisible(true);
-                dispose();
-            }
-        });
-
-        JButton registerButton = new JButton("Registrar");
+        JButton registerButton = new JButton(isEditing ? "Salvar" : "Registrar");
+        new JButton(isEditing ? "Salvar" : "Adicionar");
         registerButton.setBackground(new Color(0, 0, 139));
         registerButton.setForeground(Color.WHITE);
-        registerButton.setFont(new Font("Arial", Font.BOLD, 15));
+        registerButton.setFont(new Font("Arial", Font.BOLD, 20));
+        registerButton.setBounds(40, 400, 150, 40);
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
-                UserType tipo = UserType.COMUM;
-                int nextId = getNextID();
-                List<String> rentedBooks = new ArrayList<>();
+                try {
+                    String usuario = usernameField.getText();
+                    String senha = new String(passwordField.getPassword());
+                    UserType tipo = (UserType) typeComboBox.getSelectedItem();
+                    List<String> rentedBooks = new ArrayList<>();
 
-                if (username.isEmpty() || password.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos.");
-                    return;
-                }
-
-                Usuario newUser = new Usuario(nextId, username, password, tipo, rentedBooks);
-
-                ConexaoMysql conexao = new ConexaoMysql();
-                conexao.OpenDataBase();
-                conexao.inserirUsuario(newUser);
-
-                dispose();
-
-                if (!mainScreen.isUserTableOn()) {
-                    LoginScreen loginScreen = new LoginScreen(mainScreen);
-                    loginScreen.setVisible(true);
+                    if (isEditing) {
+                        userTablePanel.editUser(originalName, usuario, senha, tipo, rentedBooks);
+                        SucessMessageDialog.showMessageDialog(
+                                AddUserDialog.this,
+                                "Usuario \"" + usuario + "\" editado com sucesso!",
+                                "Sucesso",
+                                Color.BLUE,
+                                Color.WHITE,
+                                Color.BLACK,
+                                15);
+                        dispose();
+                    } else {
+                        userTablePanel.addUser(usuario, senha, tipo, rentedBooks);
+                        SucessMessageDialog.showMessageDialog(
+                                AddUserDialog.this,
+                                "Usuario \"" + usuario + "\" criado com sucesso!",
+                                "Sucesso",
+                                Color.GREEN,
+                                Color.BLACK,
+                                Color.BLACK,
+                                15);
+                        dispose();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -182,23 +189,9 @@ public class RegistrarScreen extends JFrame {
                 registerButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
         });
-        setUndecorated(false);
-        cancelButton.setBounds(100, 315, 100, 30);
-        registerButton.setBounds(50, 250, 200, 30);
-        setSize(320, 390);
-        panel.add(loginButton);
-        panel.add(separator);
-        panel.add(registerButton);
-    }
 
-    private int getNextID() {
-        int maxID = 0;
-        for (Usuario usuario : usuarios) {
-            if (usuario.getId() > maxID) {
-                maxID = usuario.getId();
-            }
-        }
-        return maxID + 1;
+        panel.add(cancelButton);
+        panel.add(registerButton);
     }
 
     public void setUsername(String username) {
@@ -210,6 +203,10 @@ public class RegistrarScreen extends JFrame {
         passwordField.setText(password);
         passwordField.setForeground(Color.BLACK);
         passwordField.setEchoChar('*');
+    }
+
+    public void selectUserType(UserType userType) {
+        typeComboBox.setSelectedItem(userType);
     }
 
     private ImageIcon resizeIcon(ImageIcon icon) {
@@ -267,9 +264,5 @@ public class RegistrarScreen extends JFrame {
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
             g.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
         }
-    }
-
-    public void setMainScreen(MainScreen mainScreen) {
-        this.mainScreen = mainScreen;
     }
 }
