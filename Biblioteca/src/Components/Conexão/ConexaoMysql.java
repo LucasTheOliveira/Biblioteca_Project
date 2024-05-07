@@ -10,9 +10,7 @@ import Components.Enum.Usuario;
 import Components.Enum.UserType;
 
 public class ConexaoMysql {
-    public static String URL = "jdbc:mysql://localhost:3306/biblioteca";
-    public static String USER = "root";
-    public static String PWD = "##Lucas0407";
+    public static String URL = "jdbc:sqlite:C:\\sqlite3\\library.db";
 
     public Connection dbconn = null;
     private Statement sqlmgr = null;
@@ -24,7 +22,7 @@ public class ConexaoMysql {
 
     public void OpenDataBase() {
         try {
-            dbconn = DriverManager.getConnection(URL, USER, PWD);
+            dbconn = DriverManager.getConnection(URL);
             System.out.println("Conectado com sucesso em: " + URL);
             sqlmgr = dbconn.createStatement();
         } catch (Exception Error) {

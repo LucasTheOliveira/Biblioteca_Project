@@ -1,6 +1,9 @@
 {
     "java.project.referencedLibraries": [
-        "lib/**/*.jar",
+        "c:\\Program Files\\Java\\sqlite-jdbc-3.34.0.jar",
         "c:\\Program Files\\Java\\mysql-connector-j-8.3.0\\mysql-connector-j-8.3.0.jar"
+    ],
+    "java.project.sourcePaths": [
+        "Biblioteca\\src"
     ]
 }
