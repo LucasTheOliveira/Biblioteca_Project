@@ -38,13 +38,13 @@ public class SucessMessageDialog extends JDialog {
 
     public static void showMessageDialog(Component parentComponent, Object message, String title, Color backgroundColor,
             Color textColor, Color borderColor, int fontSize) {
-        dialog = new SucessMessageDialog(parentComponent, message, title, backgroundColor, textColor, borderColor,
-                fontSize);
+        dialog = new SucessMessageDialog(parentComponent, message, title, backgroundColor, textColor, borderColor, fontSize);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 dialog.dispose();
+                this.cancel();
                 timer.cancel();
             }
         }, 5000);
