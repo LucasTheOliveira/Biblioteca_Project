@@ -2,14 +2,14 @@ package Components.Enum;
 
 import java.util.List;
 
-public class Usuario {
+public class User {
     private int id;
     private String nome;
     private String senha;
     private UserType tipo;
     private List<String> rentedBooks;
 
-    public Usuario(int id, String nome, String senha, UserType tipo, List<String> rentedBooks) {
+    public User(int id, String nome, String senha, UserType tipo, List<String> rentedBooks) {
         this.id = id;
         this.nome = nome;
         this.senha = senha;

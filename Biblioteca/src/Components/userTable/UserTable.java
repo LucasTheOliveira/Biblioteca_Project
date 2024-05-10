@@ -3,28 +3,30 @@ package Components.userTable;
 import javax.swing.*;
 import javax.swing.table.*;
 
-import Components.Enum.Usuario;
-import Components.Conexão.ConexaoMysql;
+import Components.Enum.User;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+
+import Components.CustomDialogs.AddUserDialog;
+import Components.CustomDialogs.CustomDeleteConfirmationDialog;
+import Components.CustomDialogs.SuccessMessageDialog;
 import Components.Enum.UserType;
-import Components.customDialog.CustomDeleteConfirmationDialog;
-import Components.customDialog.SucessMessageDialog;
-import Components.customDialog.AddUserDialog;
+import Conection.ConectionSql;
 
 // CLASSE DO PAINEL DA TABELA
 public class UserTable extends JPanel {
     private JTable table;
     private UserTableModel model;
-    private List<Usuario> usuarios;
+    private List<User> usuarios;
     @SuppressWarnings("unused")
     private boolean admin;
 
-    public UserTable(boolean admin, List<Usuario> usuarios) {
+    public UserTable(boolean admin, List<User> usuarios) {
         this.admin = admin;
         this.usuarios = usuarios != null ? usuarios : new ArrayList<>();
 
@@ -100,9 +102,9 @@ public class UserTable extends JPanel {
         if (searchTerm.equals("")) {
             model.setUsers(usuarios);
         } else {
-            List<Usuario> searchResults = new ArrayList<>();
+            List<User> searchResults = new ArrayList<>();
             String lowerCaseSearchTerm = searchTerm.toLowerCase();
-            for (Usuario usuario : usuarios) {
+            for (User usuario : usuarios) {
                 if (usuario.getNome().toLowerCase().contains(lowerCaseSearchTerm)) {
                     searchResults.add(usuario);
                 }
@@ -113,14 +115,14 @@ public class UserTable extends JPanel {
     }
 
     public void editUser(String originalName, String newName, String senha, UserType tipo, List<String> rentedBooks) throws SQLException {
-        for (Usuario usuario : usuarios) {
+        for (User usuario : usuarios) {
             if (usuario.getNome().equals(originalName)) {
                 usuario.setNome(newName);
                 usuario.setSenha(senha);
                 usuario.setTipo(tipo);
                 usuario.setRentedBooks(rentedBooks);
 
-                ConexaoMysql conexao = new ConexaoMysql();
+                ConectionSql conexao = new ConectionSql();
                 conexao.OpenDataBase();
                 conexao.atualizarUsuario(usuario);
                 conexao.CloseDatabase();
@@ -132,10 +134,10 @@ public class UserTable extends JPanel {
 
     public void addUser(String name, String senha, UserType tipo, List<String> rentedBooks) throws SQLException {
         int nextId = getNextID();
-        Usuario newUser = new Usuario(nextId, name, senha, tipo, rentedBooks);
+        User newUser = new User(nextId, name, senha, tipo, rentedBooks);
         usuarios.add(newUser);
 
-        ConexaoMysql conexao = new ConexaoMysql();
+        ConectionSql conexao = new ConectionSql();
         conexao.OpenDataBase();
         conexao.inserirUsuario(newUser);
         conexao.CloseDatabase();
@@ -153,7 +155,7 @@ public class UserTable extends JPanel {
 
     private int getNextID() {
         int maxID = 0;
-        for (Usuario usuario : usuarios) {
+        for (User usuario : usuarios) {
             if (usuario.getId() > maxID) {
                 maxID = usuario.getId();
             }
@@ -220,6 +222,7 @@ public class UserTable extends JPanel {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
             panel.setBackground(Color.WHITE);
+            panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
             return panel;
         }
     }
@@ -246,7 +249,7 @@ public class UserTable extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     int selectedRow = table.convertRowIndexToModel(row);
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(UserTable.this);
-                    Usuario usuario = usuarios.get(selectedRow);
+                    User usuario = usuarios.get(selectedRow);
 
                     AddUserDialog addUserDialog = new AddUserDialog(frame, UserTable.this, usuario.getNome());
                     addUserDialog.setUsername(usuario.getNome());
@@ -274,10 +277,10 @@ public class UserTable extends JPanel {
                         }
                         
                         int selectedRow = table.convertRowIndexToModel(row);
-                        Usuario usuarioRemovido = usuarios.get(selectedRow);
+                        User usuarioRemovido = usuarios.get(selectedRow);
 
                         try {
-                            ConexaoMysql conexao = new ConexaoMysql();
+                            ConectionSql conexao = new ConectionSql();
                             conexao.OpenDataBase();
                             conexao.deletarUsuario(usuarioRemovido);
                             conexao.CloseDatabase();
@@ -290,7 +293,7 @@ public class UserTable extends JPanel {
                         searchInUserTable("");
                         Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(deleteButton);
 
-                        SucessMessageDialog.showMessageDialog(parentFrame,
+                        SuccessMessageDialog.showMessageDialog(parentFrame,
                                 "Livro \"" + usuarioRemovido.getNome() + "\" deletado com sucesso!",
                                 "Sucesso",
                                 new Color(207, 14, 14),

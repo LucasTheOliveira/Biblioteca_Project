@@ -3,24 +3,24 @@ package Components.SearchPanel;
 import javax.swing.*;
 import javax.swing.border.Border;
 
-import Components.customTable.CustomTablePanel;
+import Components.BookTable.BookTablePanel;
 import Components.userTable.UserTable;
-import mainScreen.MainScreen;
+import Main.Main;
 
 import java.awt.*;
 import java.awt.event.*;
 
 public class SearchButton extends JButton {
     @SuppressWarnings("unused")
-    private CustomTablePanel tablePanel;
+    private BookTablePanel tablePanel;
     @SuppressWarnings("unused")
     private JTextField searchField;
     @SuppressWarnings("unused")
     private UserTable userTable;
     @SuppressWarnings("unused")
-    private MainScreen mainScreen;
+    private Main mainScreen;
 
-    public SearchButton(JTextField searchField, CustomTablePanel tablePanel, UserTable userTable, MainScreen mainScreen) {
+    public SearchButton(JTextField searchField, BookTablePanel tablePanel, UserTable userTable, Main mainScreen) {
         super("Pesquisar", resizeIcon(new ImageIcon(SearchButton.class.getResource("/icons/search_icon.png"))));
         this.searchField = searchField;
         this.tablePanel = tablePanel;

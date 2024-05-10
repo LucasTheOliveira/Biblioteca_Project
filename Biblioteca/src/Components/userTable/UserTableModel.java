@@ -3,26 +3,26 @@ package Components.userTable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
-import Components.Enum.Usuario;
+import Components.Enum.User;
 
 public class UserTableModel extends DefaultTableModel {
     private final static String[] columnNames = { "ID", "Nome", "Livros Alugados", "Tipo", "Ações" };
-    private List<Usuario> usuarios;
+    private List<User> usuarios;
 
-    public UserTableModel(List<Usuario> usuarios) {
+    public UserTableModel(List<User> usuarios) {
         super(new Object[usuarios.size()][columnNames.length + 1], columnNames);
         this.usuarios = usuarios;
         updateTableModel();
     }
 
-    public void setUsers(List<Usuario> usuarios) {
+    public void setUsers(List<User> usuarios) {
         this.usuarios = new ArrayList<>(usuarios);
         updateTableModel();
     }
 
     private void updateTableModel() {
         setRowCount(0);
-        for (Usuario usuario : usuarios) {
+        for (User usuario : usuarios) {
             Object[] rowData = { usuario.getId(), usuario.getNome(), usuario.getRentedBooks(), usuario.getTipo(), "" };
             addRow(rowData);
         }
@@ -35,7 +35,7 @@ public class UserTableModel extends DefaultTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        Usuario usuario = usuarios.get(row);
+        User usuario = usuarios.get(row);
         switch (column) {
             case 0:
                 return usuario.getId();

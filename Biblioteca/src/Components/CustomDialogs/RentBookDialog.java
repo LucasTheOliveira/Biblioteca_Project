@@ -1,11 +1,11 @@
-package Components.customDialog;
+package Components.CustomDialogs;
 
 import javax.swing.*;
 
-import Components.Conexão.ConexaoMysql;
-import Components.Enum.Livro;
-import Components.customTable.CustomTablePanel;
-import loginScreen.CurrentUser;
+import Components.BookTable.BookTablePanel;
+import Components.Enum.Book;
+import Components.Enum.CurrentUser;
+import Conection.ConectionSql;
 
 import java.awt.*;
 import java.util.List;
@@ -21,12 +21,12 @@ public class RentBookDialog extends JDialog {
     private JLabel rentedByLabel;
     private int selectedRow;
     private JButton saveButton;
-    private CustomTablePanel tablePanel;
-    private List<Livro> livros;
+    private BookTablePanel tablePanel;
+    private List<Book> livros;
     private JTable table;
-    private Livro livro;
+    private Book livro;
 
-    public RentBookDialog(JFrame parent, CustomTablePanel tablePanel, String title, Livro livro) {
+    public RentBookDialog(JFrame parent, BookTablePanel tablePanel, String title, Book livro) {
         super(parent, "", true);
         this.livro = livro;
         this.tablePanel = tablePanel;
@@ -133,7 +133,7 @@ public class RentBookDialog extends JDialog {
                 String newStatus = "";
                 CurrentUser currentUser = CurrentUser.getInstance();
                 String username = currentUser.getUsername();
-                ConexaoMysql conexao = new ConexaoMysql();
+                ConectionSql conexao = new ConectionSql();
                 conexao.OpenDataBase();
 
                 if (livro.getStatus().equals("Alugado")) {
@@ -167,7 +167,7 @@ public class RentBookDialog extends JDialog {
                 String successMessage = livro.getStatus().equals("Alugado")
                         ? "Livro \"" + livro.getTitulo() + "\" Alugado com sucesso!"
                         : "Livro \"" + livro.getTitulo() + "\" Devolvido com sucesso!";
-                SucessMessageDialog.showMessageDialog(
+                SuccessMessageDialog.showMessageDialog(
                         RentBookDialog.this,
                         successMessage,
                         "Sucesso",
@@ -237,7 +237,7 @@ public class RentBookDialog extends JDialog {
     public void openRentBookDialog(int row) {
         this.selectedRow = row;
         int selectedModelRow = table.convertRowIndexToModel(row);
-        Livro livro = livros.get(selectedModelRow);
+        Book livro = livros.get(selectedModelRow);
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(table);
         RentBookDialog rentBookDialog = new RentBookDialog(parentFrame, tablePanel, livro.getTitulo(), livro);
         rentBookDialog.setIsbnField(livro.getIsbn());

@@ -1,14 +1,17 @@
 package loginScreen;
 
-import mainScreen.MainScreen;
 import javax.swing.*;
 import javax.swing.border.Border;
+
+import Components.Enum.CurrentUser;
+import Conection.ConectionSql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import Components.Conexão.ConexaoMysql;
+import Main.Main;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -17,11 +20,11 @@ public class LoginScreen extends JFrame {
     private JPasswordField passwordField;
     private JCheckBox showPasswordCheckBox;
     @SuppressWarnings("unused")
-    private MainScreen mainScreen;
+    private Main mainScreen;
     @SuppressWarnings("unused")
     private boolean admin;
 
-    public LoginScreen(MainScreen mainScreen) {
+    public LoginScreen(Main mainScreen) {
         setTitle("Login");
         setSize(320, 390);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -127,7 +130,7 @@ public class LoginScreen extends JFrame {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                ConexaoMysql conexao = new ConexaoMysql();
+                ConectionSql conexao = new ConectionSql();
                 conexao.OpenDataBase();
                 String sql = "SELECT * FROM usuarios WHERE nome = '" + username + "' AND senha = '" + password + "'";
                 ResultSet resultSet = conexao.ExecutaQuery(sql);
@@ -139,7 +142,7 @@ public class LoginScreen extends JFrame {
                         CurrentUser currentUser = CurrentUser.getInstance();
                         currentUser.setUsername(username);
                         currentUser.setAdmin(isAdmin);
-                        new MainScreen(isAdmin).setVisible(true);
+                        new Main(isAdmin).setVisible(true);
                         dispose();
                     } else {
                         JOptionPane.showMessageDialog(null, "Usuário ou senha inválidos.");
@@ -165,7 +168,7 @@ public class LoginScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                RegistrarScreen registrarScreen = new RegistrarScreen(mainScreen, new ArrayList<>());
+                RegisterScreen registrarScreen = new RegisterScreen(mainScreen, new ArrayList<>());
                 registrarScreen.setVisible(true);
             }
         });
@@ -235,7 +238,7 @@ public class LoginScreen extends JFrame {
     }
     public static void main(String[] args) {
         Boolean admin = true;
-        MainScreen mainScreen = new MainScreen(admin);
+        Main mainScreen = new Main(admin);
         LoginScreen loginScreen = new LoginScreen(mainScreen);
         loginScreen.setVisible(true);
     }

@@ -2,27 +2,27 @@ package loginScreen;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import Components.Enum.Usuario;
+import Components.Enum.User;
+import Main.Main;
+
 import java.util.List;
+
 import Components.Enum.UserType;
-
-import Components.Conexão.ConexaoMysql;
-
-import mainScreen.MainScreen;
+import Conection.ConectionSql;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class RegistrarScreen extends JFrame {
+public class RegisterScreen extends JFrame {
     public JTextField usernameField;
     public JPasswordField passwordField;
     private JCheckBox showPasswordCheckBox;
     @SuppressWarnings("unused")
-    private MainScreen mainScreen;
-    private List<Usuario> usuarios;
+    private Main mainScreen;
+    private List<User> usuarios;
 
-    public RegistrarScreen(MainScreen mainScreen, List<Usuario> usuarios) {
+    public RegisterScreen(Main mainScreen, List<User> usuarios) {
         setTitle("Registrar");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -163,9 +163,9 @@ public class RegistrarScreen extends JFrame {
                     return;
                 }
 
-                Usuario newUser = new Usuario(nextId, username, password, tipo, rentedBooks);
+                User newUser = new User(nextId, username, password, tipo, rentedBooks);
 
-                ConexaoMysql conexao = new ConexaoMysql();
+                ConectionSql conexao = new ConectionSql();
                 conexao.OpenDataBase();
                 conexao.inserirUsuario(newUser);
 
@@ -193,7 +193,7 @@ public class RegistrarScreen extends JFrame {
 
     private int getNextID() {
         int maxID = 0;
-        for (Usuario usuario : usuarios) {
+        for (User usuario : usuarios) {
             if (usuario.getId() > maxID) {
                 maxID = usuario.getId();
             }
@@ -269,7 +269,7 @@ public class RegistrarScreen extends JFrame {
         }
     }
 
-    public void setMainScreen(MainScreen mainScreen) {
+    public void setMainScreen(Main mainScreen) {
         this.mainScreen = mainScreen;
     }
 }

@@ -1,41 +1,41 @@
-package Components.customButton;
+package Components.AddButtons;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import Components.customDialog.AddUserDialog;
 
 import java.awt.*;
 import java.awt.event.*;
 
-import mainScreen.MainScreen;
-import Components.userTable.UserTable;
+import Components.BookTable.BookTablePanel;
+import Components.CustomDialogs.AddBookDialog;
+import Main.Main;
 
-public class AddUserButton extends JButton {
+public class AddBookButton extends JButton {
     @SuppressWarnings("unused")
-    private UserTable userTablePanel;
+    private BookTablePanel tablePanel;
     @SuppressWarnings("unused")
-    private MainScreen mainScreen;
+    private Main mainScreen;
     
-    public AddUserButton(UserTable userTablePanel, MainScreen mainScreen) {
-        super("+ Adicionar Usuário");
-        this.userTablePanel = userTablePanel;
+    public AddBookButton(BookTablePanel tablePanel, Main mainScreen) {
+        super("+ Adicionar Livro");
+        this.tablePanel = tablePanel;
         this.mainScreen = mainScreen;
 
         setFocusable(false);
         setFont(new Font("Arial", Font.BOLD, 15));
         setPreferredSize(new Dimension(250, 70));
-        setToolTipText("Adicionar Usuario");
-        setBackground(new Color(0, 0, 250));
+        setBackground(new Color(0, 0, 139));
         setForeground(Color.WHITE);
         setContentAreaFilled(false);
         setBorder(new EmptyBorder(10, 20, 10, 20));
         setCursor(new Cursor(Cursor.HAND_CURSOR));
+        setToolTipText("Adicionar Livro");
 
         addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(userTablePanel);
-                AddUserDialog addUserDialog = new AddUserDialog(frame, userTablePanel, null);
-                addUserDialog.setVisible(true);
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(tablePanel);
+                AddBookDialog addBookDialog = new AddBookDialog(frame, tablePanel, null);
+                addBookDialog.setVisible(true);
             }
         });
     }
