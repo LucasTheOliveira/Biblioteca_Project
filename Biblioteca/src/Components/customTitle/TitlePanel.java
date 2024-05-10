@@ -3,9 +3,9 @@ package Components.customTitle;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import Components.customDialog.CustomDeleteConfirmationDialog;
+import Components.CustomDialogs.CustomDeleteConfirmationDialog;
+import Main.Main;
 import loginScreen.LoginScreen;
-import mainScreen.MainScreen;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,11 +13,11 @@ import java.awt.event.ActionListener;
 
 public class TitlePanel extends JPanel {
     @SuppressWarnings("unused")
-    private MainScreen mainScreen;
+    private Main mainScreen;
     private JButton userListButton;
     private JButton logoutButton;
 
-    public TitlePanel(JFrame parentFrame, boolean isAdmin, MainScreen mainScreen) {
+    public TitlePanel(JFrame parentFrame, boolean isAdmin, Main mainScreen) {
         setLayout(new BorderLayout());
         setBackground(new Color(0, 120, 215));
         setPreferredSize(new Dimension(getPreferredSize().width, 40));

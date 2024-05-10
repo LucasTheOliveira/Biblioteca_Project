@@ -3,9 +3,9 @@ package Components.SearchPanel;
 import javax.swing.*;
 import javax.swing.border.Border;
 
-import Components.customTable.CustomTablePanel;
+import Components.BookTable.BookTablePanel;
 import Components.userTable.UserTable;
-import mainScreen.MainScreen;
+import Main.Main;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -16,11 +16,11 @@ public class ClearFilterButton extends JButton {
     @SuppressWarnings("unused")
     private UserTable userTable;
     @SuppressWarnings("unused")
-    private MainScreen mainScreen;
+    private Main mainScreen;
     @SuppressWarnings("unused")
-    private CustomTablePanel tablePanel;
+    private BookTablePanel tablePanel;
 
-    public ClearFilterButton(JTextField searchField, CustomTablePanel tablePanel, UserTable userTable, MainScreen mainScreen) {
+    public ClearFilterButton(JTextField searchField, BookTablePanel tablePanel, UserTable userTable, Main mainScreen) {
         super("Limpar Filtro", resizeIcon(new ImageIcon(SearchButton.class.getResource("/icons/borracha.png"))));
         this.searchField = searchField;
         this.tablePanel = tablePanel;

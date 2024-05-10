@@ -1,15 +1,15 @@
-package Components.Conexão;
+package Conection;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import Components.Enum.Livro;
-import Components.Enum.Usuario;
+import Components.Enum.Book;
+import Components.Enum.User;
 import Components.Enum.UserType;
 
-public class ConexaoMysql {
+public class ConectionSql {
     public static String URL = "jdbc:sqlite:C:\\sqlite3\\library.db";
 
     public Connection dbconn = null;
@@ -51,8 +51,8 @@ public class ConexaoMysql {
         }
     }
 
-    public List<Livro> getLivros() {
-        List<Livro> livros = new ArrayList<>();
+    public List<Book> getLivros() {
+        List<Book> livros = new ArrayList<>();
         try {
             String sql = "SELECT * FROM livros";
             ResultSet resultSet = sqlmgr.executeQuery(sql);
@@ -65,7 +65,7 @@ public class ConexaoMysql {
                 String status = resultSet.getString("status");
                 String rentTime = resultSet.getString("rentTime");
                 String usuario_aluguel = resultSet.getString("usuario_aluguel");
-                Livro livro = new Livro(id, isbn, titulo, autor, categoria, status, rentTime, usuario_aluguel);
+                Book livro = new Book(id, isbn, titulo, autor, categoria, status, rentTime, usuario_aluguel);
                 livros.add(livro);
             }
         } catch (SQLException e) {
@@ -91,7 +91,7 @@ public class ConexaoMysql {
         return optionsArray;
     }
 
-    public void inserirLivro(Livro livro) {
+    public void inserirLivro(Book livro) {
         try {
             String sql = "INSERT INTO livros (isbn, titulo, autor, categoria, status, rentTime) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = dbconn.prepareStatement(sql);
@@ -108,7 +108,7 @@ public class ConexaoMysql {
         }
     }
 
-    public void atualizarLivro(Livro livro) {
+    public void atualizarLivro(Book livro) {
         try {
             String sql = "UPDATE livros SET isbn=?, titulo=?, autor=?, categoria=?, status=?, rentTime=?, usuario_aluguel=? WHERE id=?";
             PreparedStatement pstmt = dbconn.prepareStatement(sql);
@@ -127,7 +127,7 @@ public class ConexaoMysql {
         }
     }
 
-    public void deletarLivro(Livro livro) {
+    public void deletarLivro(Book livro) {
         try {
             String sql = "DELETE FROM livros WHERE id=?";
             PreparedStatement pstmt = dbconn.prepareStatement(sql);
@@ -187,7 +187,7 @@ public class ConexaoMysql {
         }
     }
 
-    public void inserirUsuario(Usuario usuario) {
+    public void inserirUsuario(User usuario) {
         try {
             String rentedBooksString = String.join("", usuario.getRentedBooks());
             String tipoString = usuario.getTipo().getValue();
@@ -205,7 +205,7 @@ public class ConexaoMysql {
         }
     }
 
-    public void deletarUsuario(Usuario usuario) {
+    public void deletarUsuario(User usuario) {
         try {
             String sql = "DELETE FROM usuarios WHERE id=?";
             PreparedStatement pstmt = dbconn.prepareStatement(sql);
@@ -217,7 +217,7 @@ public class ConexaoMysql {
         }
     }
 
-    public void atualizarUsuario(Usuario usuario) {
+    public void atualizarUsuario(User usuario) {
         try {
             String rentedBooksString = String.join(",", usuario.getRentedBooks());
             String tipoString = usuario.getTipo().getValue();
@@ -236,9 +236,9 @@ public class ConexaoMysql {
         }
     }
 
-    public List<Usuario> getUsers() {
+    public List<User> getUsers() {
         List<String> rentedBooks = new ArrayList<>();
-        List<Usuario> usuarios = new ArrayList<>();
+        List<User> usuarios = new ArrayList<>();
         try {
             String sql = "SELECT * FROM usuarios";
             ResultSet resultSet = sqlmgr.executeQuery(sql);
@@ -252,7 +252,7 @@ public class ConexaoMysql {
                 String tipoString = resultSet.getString("tipo");
                 UserType tipo = UserType.fromString(tipoString); 
                 String senha = resultSet.getString("senha");
-                Usuario usuario = new Usuario(id, nome, senha, tipo, rentedBooks);
+                User usuario = new User(id, nome, senha, tipo, rentedBooks);
                 usuarios.add(usuario);
             }
         } catch (SQLException e) {

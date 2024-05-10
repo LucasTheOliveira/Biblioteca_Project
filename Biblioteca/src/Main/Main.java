@@ -1,4 +1,4 @@
-package mainScreen;
+package Main;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,31 +7,31 @@ import java.sql.SQLException;
 import java.util.List;
 
 import Components.SearchPanel.*;
-import Components.customButton.*;
-import Components.customTable.*;
 import Components.customTitle.*;
 import Components.userTable.UserTable;
-import Components.Conexão.ConexaoMysql;
-import Components.Enum.Livro;
-import Components.Enum.Usuario;
+import Conection.ConectionSql;
+import Components.AddButtons.*;
+import Components.BookTable.*;
+import Components.Enum.Book;
+import Components.Enum.User;
 
-public class MainScreen extends JFrame {
-    private CustomTablePanel tablePanel;
+public class Main extends JFrame {
+    private BookTablePanel tablePanel;
     private UserTable userTablePanel;
-    private CustomButton addButton;
+    private AddBookButton addButton;
     private AddUserButton addUserButton;
     private BookListLabel bookListLabel;
     private boolean userTableOn;
     private boolean bookTableOn;
 
-    public MainScreen(boolean admin) {
+    public Main(boolean admin) {
         setTitle("Biblioteca UNAERP");
         setSize(1920, 1080);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setBackground(Color.WHITE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        ConexaoMysql conexao = new ConexaoMysql();
+        ConectionSql conexao = new ConectionSql();
 
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(Color.WHITE);
@@ -54,15 +54,15 @@ public class MainScreen extends JFrame {
 
         // Tabela de Livros
         conexao.OpenDataBase();
-        List<Livro> livros = conexao.getLivros();
-        tablePanel = new CustomTablePanel(admin, livros);
+        List<Book> livros = conexao.getLivros();
+        tablePanel = new BookTablePanel(admin, livros);
         tablePanel.setAdmin(admin);
         mainPanel.add(tablePanel, tablePanel.getConstraints());
 
         // Tabela de Livros
         conexao.OpenDataBase();
-        List<Usuario> usuarios = conexao.getUsers();
-        userTablePanel = new UserTable(admin, usuarios);
+        List<User> users = conexao.getUsers();
+        userTablePanel = new UserTable(admin, users);
         userTablePanel.setAdmin(admin);
         mainPanel.add(userTablePanel, userTablePanel.getConstraints());
 
@@ -77,7 +77,7 @@ public class MainScreen extends JFrame {
         mainPanel.add(searchButton, searchButton.getConstraints());
 
         // Botão "Adicionar Livro"
-        addButton = new CustomButton(tablePanel, this);
+        addButton = new AddBookButton(tablePanel, this);
         addButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         if (admin) {
             mainPanel.add(addButton, addButton.getConstraints());

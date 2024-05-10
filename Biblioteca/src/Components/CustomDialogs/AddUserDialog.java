@@ -1,4 +1,4 @@
-package Components.customDialog;
+package Components.CustomDialogs;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -158,7 +158,7 @@ public class AddUserDialog extends JDialog {
 
                     if (isEditing) {
                         userTablePanel.editUser(originalName, usuario, senha, tipo, rentedBooks);
-                        SucessMessageDialog.showMessageDialog(
+                        SuccessMessageDialog.showMessageDialog(
                                 AddUserDialog.this,
                                 "Usuario \"" + usuario + "\" editado com sucesso!",
                                 "Sucesso",
@@ -169,7 +169,7 @@ public class AddUserDialog extends JDialog {
                         dispose();
                     } else {
                         userTablePanel.addUser(usuario, senha, tipo, rentedBooks);
-                        SucessMessageDialog.showMessageDialog(
+                        SuccessMessageDialog.showMessageDialog(
                                 AddUserDialog.this,
                                 "Usuario \"" + usuario + "\" criado com sucesso!",
                                 "Sucesso",

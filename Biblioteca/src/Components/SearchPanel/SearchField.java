@@ -3,20 +3,20 @@ package Components.SearchPanel;
 import javax.swing.*;
 import javax.swing.border.Border;
 
-import Components.customTable.CustomTablePanel;
-import mainScreen.MainScreen;
+import Components.BookTable.BookTablePanel;
 import Components.userTable.UserTable;
+import Main.Main;
 
 import java.awt.*;
 import java.awt.event.*;
 
 public class SearchField extends JTextField {
-    private CustomTablePanel tablePanel;
+    private BookTablePanel tablePanel;
     private UserTable userTable;
     @SuppressWarnings("unused")
-    private MainScreen mainScreen;
+    private Main mainScreen;
 
-    public SearchField(MainScreen mainScreen) {
+    public SearchField(Main mainScreen) {
         super(FlowLayout.LEFT);
         setPlaceholder("Digite aqui para pesquisar...");
         setPreferredSize(new Dimension(400, 50));
