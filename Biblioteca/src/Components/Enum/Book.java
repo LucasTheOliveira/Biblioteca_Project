@@ -9,9 +9,13 @@ public class Book {
     private String status;
     private String rentTime;
     private String usuario_aluguel;
+    private String nome_usuario;
+    private String cpf_usuario;
+    private String telefone_usuario;
+    private String rent_time_user;
 
     public Book(int id, String isbn, String titulo, String autor, String categoria, String status, String rentTime,
-            String usuario_aluguel) {
+            String usuario_aluguel, String nome_usuario, String cpf_usuario, String telefone_usuario, String rent_time_user) {
         this.id = id;
         this.isbn = isbn;
         this.titulo = titulo;
@@ -20,6 +24,10 @@ public class Book {
         this.status = status;
         this.rentTime = rentTime;
         this.usuario_aluguel = usuario_aluguel;
+        this.nome_usuario = nome_usuario;
+        this.cpf_usuario = cpf_usuario;
+        this.telefone_usuario = telefone_usuario;
+        this.rent_time_user = rent_time_user;
     }
 
     public int getId() {
@@ -84,5 +92,37 @@ public class Book {
 
     public void setUsuarioAluguel(String usuario_aluguel) {
         this.usuario_aluguel = usuario_aluguel;
+    }
+
+    public String getNomeUsuario() {
+        return nome_usuario;
+    }
+
+    public void setNomeUsuario(String nome_usuario) {
+        this.nome_usuario = nome_usuario;
+    }
+
+    public String getCpfUsuario() {
+        return cpf_usuario;
+    }
+
+    public void setCpfUsuario(String cpf_usuario) {
+        this.cpf_usuario = cpf_usuario;
+    }
+
+    public String getTelefoneUsuario() {
+        return telefone_usuario;
+    }
+
+    public void setTelefoneUsuario(String telefone_usuario) {
+        this.telefone_usuario = telefone_usuario;
+    }
+
+    public String getRentTimeUser() {
+        return rent_time_user;
+    }
+
+    public void setRentTimeUser(String rent_time_user) {
+        this.rent_time_user = rent_time_user;
     }
 }

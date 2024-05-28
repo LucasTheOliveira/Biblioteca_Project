@@ -313,6 +313,7 @@ public class UserTable extends JPanel {
             currentValue = value;
             this.row = row;
             panel.setBackground(Color.WHITE);
+            panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
             if (column == table.getColumnCount() - 1) {
                 return panel;

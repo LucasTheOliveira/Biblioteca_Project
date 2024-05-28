@@ -114,7 +114,6 @@ public class BookTablePanel extends JPanel {
                 livro.setIsbn(isbn);
                 livro.setRentTime(rentTime);
 
-                // Atualizar o livro no banco de dados
                 ConectionSql conexao = new ConectionSql();
                 conexao.OpenDataBase();
                 conexao.atualizarLivro(livro);
@@ -151,9 +150,9 @@ public class BookTablePanel extends JPanel {
     }
 
     public void addBook(String isbn, String title, String author, String category, String status, String rentTime,
-            String usuario_aluguel) throws SQLException {
+            String usuario_aluguel, String nome_usuario, String cpf_usuario, String telefone_usuario, String rent_time_user) throws SQLException {
         int nextId = getNextID();
-        Book newLivro = new Book(nextId, title, isbn, author, category, status, rentTime, usuario_aluguel);
+        Book newLivro = new Book(nextId, title, isbn, author, category, status, rentTime, usuario_aluguel, nome_usuario, cpf_usuario, telefone_usuario, rent_time_user);
         livros.add(newLivro);
 
         // Adicionar o novo livro ao banco de dados
@@ -378,6 +377,7 @@ public class BookTablePanel extends JPanel {
             currentValue = value;
             this.row = row;
             panel.setBackground(Color.WHITE);
+            panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
             if (column == table.getColumnCount() - 1) {
                 return panel;
