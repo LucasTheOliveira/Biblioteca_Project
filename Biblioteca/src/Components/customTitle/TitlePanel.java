@@ -62,6 +62,7 @@ public class TitlePanel extends JPanel {
             userListButton.setFocusable(false);
             userListButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             userListButton.setToolTipText("Lista de Usuários");
+            userListButton.setIcon(resizeIcon(new ImageIcon(getClass().getResource("/icons/user.png"))));
             userListButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

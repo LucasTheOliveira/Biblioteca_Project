@@ -1,6 +1,9 @@
 package Components.CustomDialogs;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import Components.BookTable.BookTablePanel;
 import Components.Enum.Book;
@@ -10,6 +13,8 @@ import Conection.ConectionSql;
 import java.awt.*;
 import java.util.List;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 
 public class RentBookDialog extends JDialog {
@@ -19,6 +24,14 @@ public class RentBookDialog extends JDialog {
     private JLabel isbnLabel;
     private JLabel rentTimeLabel;
     private JLabel rentedByLabel;
+    private JLabel nameLabel;
+    private JLabel cpfLabel;
+    private JLabel phoneLabel;
+    private JLabel rentalTimeLabel;
+    private JTextField nameTextField;
+    private JTextField cpfTextField;
+    private JTextField phoneTextField;
+    private JTextField rentalTimeTextField;
     private int selectedRow;
     private JButton saveButton;
     private BookTablePanel tablePanel;
@@ -31,20 +44,29 @@ public class RentBookDialog extends JDialog {
         this.livro = livro;
         this.tablePanel = tablePanel;
         setLayout(new BorderLayout());
-        setSize(600, 600);
+        if (livro.getStatus().equals("Alugado")) {
+            setSize(850, 600);
+        } else {
+            setSize(850, 700);
+        }
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
+        setLocationRelativeTo(parent);
         setResizable(false);
         getContentPane().setBackground(Color.WHITE);
         UIManager.put("Panel.background", Color.WHITE);
-
         getContentPane().setBackground(Color.WHITE);
 
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 20, 10);
+        GridBagConstraints gbd = new GridBagConstraints();
         Font labelFont = new Font("Arial", Font.BOLD, 20);
+        Font labelUserFont;
+        if (livro.getStatus().equals("Disponivel")) {
+            labelUserFont = new Font("Arial", Font.BOLD, 15);
+        } else {
+            labelUserFont = new Font("Arial", Font.BOLD, 20);
+        }
 
         rentedByLabel = createLabel("Alugado por: ");
         titleLabel = createLabel("Título:          ");
@@ -53,6 +75,11 @@ public class RentBookDialog extends JDialog {
         isbnLabel = createLabel("ISBN:          ");
         rentTimeLabel = createLabel("Tempo de locação máximo:          ");
 
+        nameLabel = createLabel("Nome do Usuário: ");
+        cpfLabel = createLabel("CPF: ");
+        phoneLabel = createLabel("Número de Telefone: ");
+        rentalTimeLabel = createLabel("Tempo de Aluguel (em dias): ");
+
         rentedByLabel.setFont(labelFont);
         titleLabel.setFont(labelFont);
         authorLabel.setFont(labelFont);
@@ -60,9 +87,34 @@ public class RentBookDialog extends JDialog {
         isbnLabel.setFont(labelFont);
         rentTimeLabel.setFont(labelFont);
 
+        nameLabel.setFont(labelUserFont);
+        cpfLabel.setFont(labelUserFont);
+        phoneLabel.setFont(labelUserFont);
+        rentalTimeLabel.setFont(labelUserFont);
+
+        nameTextField = new JTextField();
+        cpfTextField = new FormattedText("CPF");
+        phoneTextField = new FormattedText("PHONE");
+        rentalTimeTextField = new JTextField();
+
+        nameTextField.setColumns(20);
+        cpfTextField.setColumns(20);
+        phoneTextField.setColumns(20);
+        rentalTimeTextField.setColumns(20);
+
+        nameTextField.setBorder(new RoundedBorder(10));
+        cpfTextField.setBorder(new RoundedBorder(10));
+        phoneTextField.setBorder(new RoundedBorder(10));
+        rentalTimeTextField.setBorder(new RoundedBorder(10));
+
+        setPlaceholder(nameTextField, "Nome Completo");
+        setPlaceholder(cpfTextField, "Digite seu Cpf");
+        setPlaceholder(phoneTextField, "Telefone com DDD");
+        setPlaceholder(rentalTimeTextField, "Tempo de Locação");
+
         JLabel dialogTitleLabel = new JLabel(livro.getStatus().equals("Alugado") ? "Devolver Livro" : "Alugar Livro");
         dialogTitleLabel.setForeground(new Color(0, 0, 139));
-        dialogTitleLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        dialogTitleLabel.setFont(new Font("Arial", Font.BOLD, 40));
 
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setBackground(Color.WHITE);
@@ -71,28 +123,11 @@ public class RentBookDialog extends JDialog {
         add(titlePanel, BorderLayout.NORTH);
         add(panel, BorderLayout.WEST);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
         if (livro.getStatus().equals("Alugado")) {
-            gbc.insets = new Insets(0, 20, 40, 20);
+            gradeDevolverLivro(panel, gbc);
         } else {
-            gbc.insets = new Insets(0, 20, 50, 20);
+            gradeAlugarLivro(panel, gbc, gbd);
         }
-
-        panel.add(rentedByLabel, gbc);
-        gbc.gridy++;
-        panel.add(titleLabel, gbc);
-        gbc.gridy++;
-        panel.add(authorLabel, gbc);
-        gbc.gridy++;
-        panel.add(categoryLabel, gbc);
-        gbc.gridy++;
-        panel.add(isbnLabel, gbc);
-        gbc.gridy++;
-        panel.add(rentTimeLabel, gbc);
-
-        setLocationRelativeTo(parent);
 
         GridBagConstraints titleGbc = new GridBagConstraints();
         titleGbc.gridx = 0;
@@ -119,7 +154,7 @@ public class RentBookDialog extends JDialog {
         saveButton.setFocusable(false);
         saveButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         saveButton.setPreferredSize(new Dimension(120, 40));
-        saveButton.setBackground(new Color(0, 0, 139));
+        saveButton.setEnabled(false);
         CurrentUser currentUser = CurrentUser.getInstance();
         String rentedBy = livro.getUsuarioAluguel();
         String username = currentUser.getUsername();
@@ -128,12 +163,52 @@ public class RentBookDialog extends JDialog {
             saveButton.setBackground(Color.GRAY);
         }
 
+        saveButton.addPropertyChangeListener("enabled", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                boolean enabled = (boolean) evt.getNewValue();
+                if (!enabled) {
+                    saveButton.setBackground(Color.LIGHT_GRAY);
+                } else {
+                    saveButton.setBackground(new Color(0, 0, 139));
+                }
+            }
+        });
+
+        DocumentListener documentListener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                enableOrDisableSaveButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                enableOrDisableSaveButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                enableOrDisableSaveButton();
+            }
+        };
+
+        cpfTextField.getDocument().addDocumentListener(documentListener);
+        nameTextField.getDocument().addDocumentListener(documentListener);
+        phoneTextField.getDocument().addDocumentListener(documentListener);
+        rentalTimeTextField.getDocument().addDocumentListener(documentListener);
+
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String newStatus = "";
                 CurrentUser currentUser = CurrentUser.getInstance();
-                String username = currentUser.getUsername();
                 ConectionSql conexao = new ConectionSql();
+
+                String newStatus = "";
+                String username = currentUser.getUsername();
+                String name = nameTextField.getText();
+                String cpf = cpfTextField.getText();
+                String phone = phoneTextField.getText();
+                String rentaTimeUser = rentalTimeTextField.getText();
+
                 conexao.OpenDataBase();
 
                 if (livro.getStatus().equals("Alugado")) {
@@ -148,12 +223,21 @@ public class RentBookDialog extends JDialog {
                     rentedBooks.remove(livro.getTitulo());
                     conexao.updateRentedBooks(username, rentedBooks);
                     livro.setUsuarioAluguel(null);
+                    livro.setNomeUsuario(null);
+                    livro.setCpfUsuario(null);
+                    livro.setTelefoneUsuario(null);
+                    livro.setRentTimeUser(null);
                 } else {
                     List<String> rentedBooks = conexao.getRentedBooks(username);
                     rentedBooks.add(livro.getTitulo());
                     conexao.updateRentedBooks(username, rentedBooks);
                     livro.setUsuarioAluguel(username);
+                    livro.setNomeUsuario(name);
+                    livro.setCpfUsuario(cpf);
+                    livro.setTelefoneUsuario(phone);
+                    livro.setRentTimeUser(rentaTimeUser);
                 }
+
 
                 conexao.atualizarLivro(livro);
 
@@ -198,10 +282,117 @@ public class RentBookDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    private void gradeAlugarLivro(JPanel panel, GridBagConstraints gbc, GridBagConstraints gbd) {
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridheight = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 30, 10, 10);
+        gbc.weightx = 0.8;
+        panel.add(rentedByLabel, gbc);
+        gbc.gridy++;
+        panel.add(titleLabel, gbc);
+        gbc.gridy++;
+        panel.add(authorLabel, gbc);
+        gbc.gridy++;
+        panel.add(categoryLabel, gbc);
+        gbc.gridy++;
+        panel.add(isbnLabel, gbc);
+        gbc.gridy++;
+        panel.add(rentTimeLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridheight = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        gbc.weightx = 0;
+        panel.add(new JSeparator(SwingConstants.VERTICAL), gbc);
+
+        gbd.gridx = 2;
+        gbd.gridy = 1;
+        gbc.gridheight = 2;
+        gbd.anchor = GridBagConstraints.WEST;
+        gbd.insets = new Insets(10, 30, 10, 20);
+        gbd.weightx = 0.8;
+        gbd.fill = GridBagConstraints.NONE;
+        panel.add(nameLabel, gbd);
+        gbd.gridy++;
+        panel.add(nameTextField, gbd);
+        gbd.gridy++;
+        panel.add(cpfLabel, gbd);
+        gbd.gridy++;
+        panel.add(cpfTextField, gbd);
+        gbd.gridy++;
+        panel.add(phoneLabel, gbd);
+        gbd.gridy++;
+        panel.add(phoneTextField, gbd);
+        gbd.gridy++;
+        panel.add(rentalTimeLabel, gbd);
+        gbd.gridy++;
+        panel.add(rentalTimeTextField, gbd);
+        gbd.gridy++;
+    }
+    
+    private void gradeDevolverLivro(JPanel panel, GridBagConstraints gbc) {
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(15, 10, 15, 10);
+        gbc.weightx = 0.8;
+        panel.add(rentedByLabel, gbc);
+        gbc.gridy++;
+        panel.add(titleLabel, gbc);
+        gbc.gridy++;
+        panel.add(authorLabel, gbc);
+        gbc.gridy++;
+        panel.add(categoryLabel, gbc);
+        gbc.gridy++;
+        panel.add(isbnLabel, gbc);
+        gbc.gridy++;
+        panel.add(rentTimeLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridheight = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        gbc.weightx = 0;
+        panel.add(new JSeparator(SwingConstants.VERTICAL), gbc);
+    
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridheight = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(15, 30, 15, 10);
+        gbc.weightx = 0.8;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(nameLabel, gbc);
+        gbc.gridy++;
+        panel.add(cpfLabel, gbc);
+        gbc.gridy++;
+        panel.add(phoneLabel, gbc);
+        gbc.gridy++;
+        panel.add(rentalTimeLabel, gbc);
+        gbc.gridy++;
+    }
+
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.BOLD, 15));
         return label;
+    }
+
+    private void enableOrDisableSaveButton() {
+        boolean isNameEmpty = nameTextField.getText().trim().isEmpty()
+                || nameTextField.getText().equals("Nome Completo");
+        boolean isCpfEmpty = cpfTextField.getText().trim().isEmpty()
+                || cpfTextField.getText().equals("Digite seu Cpf");
+        boolean isPhoneEmpty = phoneTextField.getText().trim().isEmpty()
+                || phoneTextField.getText().equals("Telefone com DDD");
+        boolean isRentalTimeEmpty = phoneTextField.getText().trim().isEmpty()
+                || rentalTimeTextField.getText().equals("Tempo de Locação");
+        saveButton.setEnabled(!isNameEmpty && !isCpfEmpty && !isPhoneEmpty && !isRentalTimeEmpty);
     }
 
     public void setTitleField(String titulo) {
@@ -209,6 +400,14 @@ public class RentBookDialog extends JDialog {
         if (livro.getStatus().equals("Alugado")) {
             rentedByLabel.setText("Alugado por: " + livro.getUsuarioAluguel());
             rentedByLabel.setVisible(true);
+            nameLabel.setText("Nome do Usuario:   " + livro.getNomeUsuario());
+            nameLabel.setVisible(true);
+            cpfLabel.setText("Cpf do Usuario:   " + livro.getCpfUsuario());
+            cpfLabel.setVisible(true);
+            phoneLabel.setText("Telefone do Usuario:   " + livro.getTelefoneUsuario());
+            phoneLabel.setVisible(true);
+            rentalTimeLabel.setText("Tempo de aluguel:   " + livro.getRentTimeUser());
+            rentalTimeLabel.setVisible(true);
         } else {
             rentedByLabel.setVisible(false);
         }
@@ -230,6 +429,22 @@ public class RentBookDialog extends JDialog {
         rentTimeLabel.setText("Tempo de locação máximo:   " + rentTime);
     }
 
+    public void setNomeUsuario(String nomeUsuario) {
+        nameLabel.setText("Nome do Usuario:   " + nomeUsuario);
+    }
+
+    public void setCpfUsuario(String cpfUsuario) {
+        cpfLabel.setText("Cpf do Usuario:   " + cpfUsuario);
+    }
+
+    public void setTelefoneUsuario(String telefoneUsuario) {
+        phoneLabel.setText("Telefone do Usuario:   " + telefoneUsuario);
+    }
+
+    public void setRentTimeUser(String rentTimeUser) {
+        rentalTimeLabel.setText("Telefone do Usuario:   " + rentTimeUser);
+    }
+
     public void setSelectedRow(int selectedRow) {
         this.selectedRow = selectedRow;
     }
@@ -244,6 +459,55 @@ public class RentBookDialog extends JDialog {
         rentBookDialog.setAuthorField(livro.getAutor());
         rentBookDialog.setCategoryComboBox(livro.getCategoria());
         rentBookDialog.setRentTimeField(livro.getRentTime());
+        rentBookDialog.setNomeUsuario(livro.getNomeUsuario());
+        rentBookDialog.setCpfUsuario(livro.getCpfUsuario());
+        rentBookDialog.setTelefoneUsuario(livro.getTelefoneUsuario());
+        rentBookDialog.setRentTimeUser(livro.getRentTimeUser());
         rentBookDialog.setVisible(true);
+    }
+
+    private void setPlaceholder(JTextField field, String text) {
+        field.setText(text);
+        field.setForeground(Color.GRAY);
+        field.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (field.getText().equals(text)) {
+                    field.setText("");
+                    field.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (field.getText().isEmpty()) {
+                    field.setText(text);
+                    field.setForeground(Color.GRAY);
+                }
+            }
+        });
+    }
+
+    private class RoundedBorder implements Border {
+        private int radius;
+
+        public RoundedBorder(int radius) {
+            this.radius = radius;
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(this.radius + 1, this.radius + 1, this.radius + 2, this.radius);
+        }
+
+        @Override
+        public boolean isBorderOpaque() {
+            return true;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            g.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
+        }
     }
 }

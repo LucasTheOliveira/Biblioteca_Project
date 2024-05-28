@@ -219,6 +219,10 @@ public class AddBookDialog extends JDialog {
                     String rentTime = rentTimeField.getText().toString();
                     String rentTimeUnit = (String) rentTimeUnitComboBox.getSelectedItem();
                     String rentTimeString = rentTime + " " + rentTimeUnit;
+                    String nome_usuario = null;
+                    String cpf_usuario = null;
+                    String telefone_usuario = null;
+                    String rent_time_user = null;
 
                     if (isEditing) {
                         tablePanel.editBook(originalTitle, title, isbn, author, category, status, rentTimeString);
@@ -232,7 +236,7 @@ public class AddBookDialog extends JDialog {
                                 15);
                     } else {
                         String usuario_aluguel = null;
-                        tablePanel.addBook(title, isbn, author, category, status, rentTimeString, usuario_aluguel);
+                        tablePanel.addBook(title, isbn, author, category, status, rentTimeString, usuario_aluguel, nome_usuario, cpf_usuario, telefone_usuario, rent_time_user);
                         SuccessMessageDialog.showMessageDialog(
                                 AddBookDialog.this,
                                 "Livro \"" + title + "\" criado com sucesso!",
