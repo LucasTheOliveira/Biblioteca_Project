@@ -2,11 +2,36 @@ package Components.Enum;
 
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+
+@Entity
+@Table(name = "usuarios")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(name = "nome")
     private String nome;
+
+    @Column(name = "senha")
     private String senha;
+
+    @Convert(converter = UserTypeConverter.class)
+    @Column(name = "tipo")
     private UserType tipo;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "rentedBooks")
     private List<String> rentedBooks;
 
     public User(int id, String nome, String senha, UserType tipo, List<String> rentedBooks) {
@@ -15,6 +40,9 @@ public class User {
         this.senha = senha;
         this.tipo = tipo;
         this.rentedBooks = rentedBooks;
+    }
+
+    public User() {
     }
 
     public int getId() {

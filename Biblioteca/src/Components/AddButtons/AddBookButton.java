@@ -34,7 +34,7 @@ public class AddBookButton extends JButton {
         addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(tablePanel);
-                AddBookDialog addBookDialog = new AddBookDialog(frame, tablePanel, null);
+                AddBookDialog addBookDialog = new AddBookDialog(frame, tablePanel, null, 0);
                 addBookDialog.setVisible(true);
             }
         });

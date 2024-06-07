@@ -49,6 +49,8 @@ public class BookTableModel extends DefaultTableModel {
                 return livro.getCategoria();
             case 5:
                 return livro.getStatus();
+            case 6:
+                return "";
             default:
                 return null;
         }

@@ -1,7 +1,18 @@
 package Components.Enum;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "livros")
 public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String isbn;
     private String titulo;
     private String autor;
@@ -28,6 +39,9 @@ public class Book {
         this.cpf_usuario = cpf_usuario;
         this.telefone_usuario = telefone_usuario;
         this.rent_time_user = rent_time_user;
+    }
+
+    public Book() {
     }
 
     public int getId() {

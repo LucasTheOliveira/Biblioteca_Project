@@ -2,13 +2,16 @@ package loginScreen;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+
+import org.hibernate.Transaction;
+import org.hibernate.Session;
 import Components.Enum.User;
 import Main.Main;
 
 import java.util.List;
 
 import Components.Enum.UserType;
-import Conection.ConectionSql;
+import Conection.HibernateUtil;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -157,26 +160,28 @@ public class RegisterScreen extends JFrame {
                 UserType tipo = UserType.COMUM;
                 int nextId = getNextID();
                 List<String> rentedBooks = new ArrayList<>();
-
+        
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos.");
                     return;
                 }
 
-                User newUser = new User(nextId, username, password, tipo, rentedBooks);
-
-                ConectionSql conexao = new ConectionSql();
-                conexao.OpenDataBase();
-                conexao.inserirUsuario(newUser);
-
-                dispose();
-
-                if (!mainScreen.isUserTableOn()) {
-                    LoginScreen loginScreen = new LoginScreen(mainScreen);
-                    loginScreen.setVisible(true);
-                }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            User newUser = new User(nextId, username, password, tipo, rentedBooks);
+            session.save(newUser);
+            transaction.commit();
+            dispose();
+            if (!mainScreen.isUserTableOn()) {
+                LoginScreen loginScreen = new LoginScreen(mainScreen);
+                loginScreen.setVisible(true);
             }
-        });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro ao registrar usuário.");
+        }
+    }
+});
         registerButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 registerButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

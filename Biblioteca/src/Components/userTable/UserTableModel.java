@@ -45,6 +45,8 @@ public class UserTableModel extends DefaultTableModel {
                 return usuario.getRentedBooks();
             case 3:
                 return usuario.getTipo();
+            case 4:
+                return "";
             default:
                 return null;
         }

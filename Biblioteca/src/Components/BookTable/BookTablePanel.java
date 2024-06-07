@@ -3,29 +3,33 @@ package Components.BookTable;
 import javax.swing.*;
 import javax.swing.table.*;
 
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+
 import Components.CustomDialogs.AddBookDialog;
 import Components.CustomDialogs.CustomDeleteConfirmationDialog;
 import Components.CustomDialogs.RentBookDialog;
 import Components.CustomDialogs.SuccessMessageDialog;
 import Components.Enum.Book;
-import Conection.ConectionSql;
+import Components.Enum.BookDAO;
+import Components.userTable.UserTable;
+import Conection.HibernateUtil;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-// CLASSE DO PAINEL DA TABELA
 public class BookTablePanel extends JPanel {
     private JTable table;
     private BookTableModel model;
     private List<Book> livros;
     private boolean admin;
+    private UserTable userTable;
 
-    public BookTablePanel(boolean admin, List<Book> livros) {
+    public BookTablePanel(boolean admin, List<Book> livros, UserTable userTable) {
         this.admin = admin;
+        this.userTable = userTable;
         this.livros = livros != null ? livros : new ArrayList<>();
 
         TableCellRenderer statusRenderer = new StatusRenderer();
@@ -74,21 +78,25 @@ public class BookTablePanel extends JPanel {
         isbnColumn.setMaxWidth(200);
         isbnColumn.setMinWidth(200);
 
+        TableColumn titleColumn = table.getColumnModel().getColumn(2);
+        titleColumn.setMaxWidth(600);
+        titleColumn.setMinWidth(600);
+
         TableColumn authorColumn = table.getColumnModel().getColumn(3);
-        authorColumn.setMaxWidth(200);
-        authorColumn.setMinWidth(200);
+        authorColumn.setMaxWidth(300);
+        authorColumn.setMinWidth(300);
 
         TableColumn categoryColumn = table.getColumnModel().getColumn(4);
-        categoryColumn.setMaxWidth(200);
-        categoryColumn.setMinWidth(200);
+        categoryColumn.setMaxWidth(300);
+        categoryColumn.setMinWidth(300);
 
         TableColumn dispoColumn = table.getColumnModel().getColumn(5);
         dispoColumn.setMaxWidth(200);
         dispoColumn.setMinWidth(200);
 
         TableColumn actionsColumn = table.getColumnModel().getColumn(6);
-        actionsColumn.setMaxWidth(220);
-        actionsColumn.setMinWidth(220);
+        actionsColumn.setMaxWidth(200);
+        actionsColumn.setMinWidth(200);
     }
 
     public GridBagConstraints getConstraints() {
@@ -103,10 +111,17 @@ public class BookTablePanel extends JPanel {
         return tableConstraints;
     }
 
-    public void editBook(String originalTitle, String newTitle, String isbn, String author, String category,
-            String status, String rentTime) throws SQLException {
-        for (Book livro : livros) {
-            if (livro.getTitulo().equals(originalTitle)) {
+    public void editBook(int bookId, String newTitle, String isbn, String author, String category,
+            String status, String rentTime) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            Query<Book> query = session.createQuery("from Book where id = :bookId", Book.class);
+            query.setParameter("bookId", bookId);
+            List<Book> livros = query.list();
+
+            if (livros.size() == 1) {
+                Book livro = livros.get(0);
                 livro.setTitulo(newTitle);
                 livro.setAutor(author);
                 livro.setCategoria(category);
@@ -114,25 +129,31 @@ public class BookTablePanel extends JPanel {
                 livro.setIsbn(isbn);
                 livro.setRentTime(rentTime);
 
-                ConectionSql conexao = new ConectionSql();
-                conexao.OpenDataBase();
-                conexao.atualizarLivro(livro);
-                conexao.CloseDatabase();
-                break;
+                session.update(livro);
+                session.getTransaction().commit();
+            } else if (livros.size() == 0) {
+                System.out.println("Livro não encontrado.");
+            } else {
+                System.out.println("Mais de um livro encontrado com o título especificado.");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        model.fireTableDataChanged();
+        updateTable();
     }
 
     public void editStatus(int row, String status) {
         Book livro = livros.get(row);
         livro.setStatus(status);
-        model.fireTableRowsUpdated(row, row);
+        model.fireTableDataChanged();
     }
 
     public void searchInTable(String searchTerm) {
-        if (searchTerm.equals("")) {
-            model.setLivros(livros);
+        if (searchTerm.equals("") || searchTerm.equals("Digite aqui para pesquisar...")) {
+            BookDAO bookDao = new BookDAO();
+            List<Book> livross = bookDao.getLivros();
+            model.setLivros(livross);
+            livros = livross;
         } else {
             List<Book> searchResults = new ArrayList<>();
             String lowerCaseSearchTerm = searchTerm.toLowerCase();
@@ -145,34 +166,51 @@ public class BookTablePanel extends JPanel {
                 }
             }
             model.setLivros(searchResults);
+            livros = searchResults;
         }
         model.fireTableDataChanged();
     }
 
     public void addBook(String isbn, String title, String author, String category, String status, String rentTime,
-            String usuario_aluguel, String nome_usuario, String cpf_usuario, String telefone_usuario, String rent_time_user) throws SQLException {
-        int nextId = getNextID();
-        Book newLivro = new Book(nextId, title, isbn, author, category, status, rentTime, usuario_aluguel, nome_usuario, cpf_usuario, telefone_usuario, rent_time_user);
-        livros.add(newLivro);
+            String usuario_aluguel, String nome_usuario, String cpf_usuario, String telefone_usuario,
+            String rent_time_user) {
+            int nextId = getNextID();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
 
-        // Adicionar o novo livro ao banco de dados
-        ConectionSql conexao = new ConectionSql();
-        conexao.OpenDataBase();
-        conexao.inserirLivro(newLivro);
-        conexao.CloseDatabase();
+            Book newLivro = new Book();
+            newLivro.setId(nextId);
+            newLivro.setIsbn(isbn);
+            newLivro.setTitulo(title);
+            newLivro.setAutor(author);
+            newLivro.setCategoria(category);
+            newLivro.setStatus(status);
+            newLivro.setRentTime(rentTime);
+            newLivro.setUsuarioAluguel(usuario_aluguel);
+            newLivro.setNomeUsuario(nome_usuario);
+            newLivro.setCpfUsuario(cpf_usuario);
+            newLivro.setTelefoneUsuario(telefone_usuario);
+            newLivro.setRentTimeUser(rent_time_user);
 
-        Vector<Object> rowData = new Vector<>();
-        rowData.add(newLivro.getId());
-        rowData.add(newLivro.getIsbn());
-        rowData.add(newLivro.getTitulo());
-        rowData.add(newLivro.getAutor());
-        rowData.add(newLivro.getCategoria());
-        rowData.add(newLivro.getStatus());
-        rowData.add(newLivro.getRentTime());
-        rowData.add("");
+            session.save(newLivro);
+            session.getTransaction().commit();
 
-        model.addRow(rowData);
-        searchInTable("");
+            model.addRow(new Object[] {
+                    newLivro.getId(),
+                    newLivro.getIsbn(),
+                    newLivro.getTitulo(),
+                    newLivro.getAutor(),
+                    newLivro.getCategoria(),
+                    newLivro.getStatus(),
+                    newLivro.getRentTime(),
+                    ""
+            });
+
+            livros.add(newLivro);
+            updateTable();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private int getNextID() {
@@ -202,6 +240,14 @@ public class BookTablePanel extends JPanel {
             column.setCellRenderer(new ButtonRenderer());
             column.setCellEditor(new ButtonEditor());
         }
+    }
+
+    public void updateTable() {
+        BookDAO bookDao = new BookDAO();
+        List<Book> livross = bookDao.getLivros();
+        model.setLivros(livross);
+        model.fireTableDataChanged();
+        searchInTable("");
     }
 
     private void updateTableButtons() {
@@ -288,8 +334,7 @@ public class BookTablePanel extends JPanel {
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(BookTablePanel.this);
                     Book livro = livros.get(selectedRow);
 
-                    RentBookDialog rentBookDialog = new RentBookDialog(frame, BookTablePanel.this, livro.getTitulo(),
-                            livro);
+                    RentBookDialog rentBookDialog = new RentBookDialog(frame, BookTablePanel.this, userTable, livro.getTitulo(), livro);
                     rentBookDialog.setSelectedRow(selectedRow);
                     rentBookDialog.setTitleField(livro.getTitulo());
                     rentBookDialog.setIsbnField(livro.getIsbn());
@@ -306,10 +351,13 @@ public class BookTablePanel extends JPanel {
             editButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     int selectedRow = table.convertRowIndexToModel(row);
+                    int bookId = (int) model.getValueAt(selectedRow, 0);
+
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(BookTablePanel.this);
                     Book livro = livros.get(selectedRow);
 
-                    AddBookDialog addBookDialog = new AddBookDialog(frame, BookTablePanel.this, livro.getTitulo());
+                    AddBookDialog addBookDialog = new AddBookDialog(frame, BookTablePanel.this, livro.getTitulo(),
+                            bookId);
                     addBookDialog.setTitleField(livro.getTitulo());
                     addBookDialog.setIsbnField(livro.getIsbn());
                     addBookDialog.setAuthorField(livro.getAutor());
@@ -325,10 +373,11 @@ public class BookTablePanel extends JPanel {
 
             deleteButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    String bookTitle = (String) model.getValueAt(row, 2);
+                    int selectedRow = table.convertRowIndexToModel(row);
+                    int bookId = (int) model.getValueAt(selectedRow, 0);
             
                     CustomDeleteConfirmationDialog confirmationDialog = new CustomDeleteConfirmationDialog(null,
-                            "Tem certeza de que deseja deletar o livro \"" + bookTitle + "\"?",
+                            "Tem certeza de que deseja deletar o livro com ID \"" + bookId + "\"?",
                             new ImageIcon(getClass().getResource("/icons/delete.png")));
                     confirmationDialog.setVisible(true);
             
@@ -337,30 +386,34 @@ public class BookTablePanel extends JPanel {
                             table.getCellEditor().cancelCellEditing();
                         }
             
-                        int selectedRow = table.convertRowIndexToModel(row);
-                        Book livroRemovido = livros.get(selectedRow);
+                        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+                            session.beginTransaction();
+                            Query<Book> query = session.createQuery("FROM Book b WHERE b.id = :bookId", Book.class);
+                            query.setParameter("bookId", bookId);
+                            Book livroRemovido = query.uniqueResult();
             
-                        try {
-                            ConectionSql conexao = new ConectionSql();
-                            conexao.OpenDataBase();
-                            conexao.deletarLivro(livroRemovido);
-                            conexao.CloseDatabase();
-                        } catch (SQLException ex) {
+                            if (livroRemovido != null) {
+                                session.delete(livroRemovido);
+                                session.getTransaction().commit();
+            
+                                BookDAO bookDao = new BookDAO();
+                                List<Book> livross = bookDao.getLivros();
+                                model.setLivros(livross);
+                                model.fireTableDataChanged();
+                                livros.remove(selectedRow);
+            
+                                Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(deleteButton);
+                                SuccessMessageDialog.showMessageDialog(parentFrame,
+                                        "Livro com ID \"" + livroRemovido.getId() + "\" deletado com sucesso!",
+                                        "Sucesso",
+                                        new Color(207, 14, 14),
+                                        Color.WHITE,
+                                        Color.BLACK,
+                                        15);
+                            }
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-            
-                        model.removeRow(selectedRow);
-                        livros.remove(selectedRow);
-                        searchInTable("");
-                        Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(deleteButton);
-            
-                        SuccessMessageDialog.showMessageDialog(parentFrame,
-                                "Livro \"" + livroRemovido.getTitulo() + "\" deletado com sucesso!",
-                                "Sucesso",
-                                new Color(207, 14, 14),
-                                Color.WHITE,
-                                Color.BLACK,
-                                15);
                     }
                 }
             });
