@@ -3,7 +3,9 @@ package Components.customTitle;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import Components.CustomDialogs.AddUserDialog;
 import Components.CustomDialogs.CustomDeleteConfirmationDialog;
+import Components.userTable.UserTable;
 import Main.Main;
 import loginScreen.LoginScreen;
 
@@ -16,13 +18,18 @@ public class TitlePanel extends JPanel {
     private Main mainScreen;
     private JButton userListButton;
     private JButton logoutButton;
+    private JButton addUserButton;
+    private UserTable userTable;
+    private Boolean userEdit;
 
-    public TitlePanel(JFrame parentFrame, boolean isAdmin, Main mainScreen) {
+    public TitlePanel(JFrame parentFrame, boolean isAdmin, Main mainScreen, UserTable userTable, boolean userEdit) {
         setLayout(new BorderLayout());
         setBackground(new Color(0, 120, 215));
         setPreferredSize(new Dimension(getPreferredSize().width, 40));
 
         this.mainScreen = mainScreen;
+        this.userTable = userTable;
+        this.userEdit = userEdit;
 
         JLabel titleLabel = new JLabel("Biblioteca UNAERP");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -57,6 +64,19 @@ public class TitlePanel extends JPanel {
         });
 
         if (isAdmin) {
+            addUserButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/edit_user.png"))));
+            addUserButton.setBackground(Color.WHITE);
+            addUserButton.setFocusable(false);
+            addUserButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            addUserButton.setToolTipText("Adicionar Usuário");
+            addUserButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    AddUserDialog addUserDialog = new AddUserDialog(parentFrame, userTable, null, TitlePanel.this);
+                    addUserDialog.setVisible(true);
+                }
+            });
+
             userListButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource(mainScreen.isUserTableOn() ? "/icons/user.png" : "/icons/livro.png"))));
             userListButton.setBackground(Color.WHITE);
             userListButton.setFocusable(false);
@@ -75,6 +95,8 @@ public class TitlePanel extends JPanel {
                     }
                 }
             });
+
+            buttonPanel.add(addUserButton);
             buttonPanel.add(userListButton);
         }
 
@@ -82,6 +104,18 @@ public class TitlePanel extends JPanel {
         buttonPanel.setBorder(new EmptyBorder(0, 0, 0, 80));
 
         add(buttonPanel, BorderLayout.EAST);
+
+        if (isAdmin) {
+            JPanel leftButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            leftButtonPanel.setOpaque(false);
+            leftButtonPanel.add(addUserButton);
+            leftButtonPanel.setBorder(new EmptyBorder(0, 0, 0, 10));
+            add(leftButtonPanel, BorderLayout.WEST);
+        }
+    }
+
+    public Boolean getUserEdit() {
+        return userEdit;
     }
 
     public GridBagConstraints getConstraints() {

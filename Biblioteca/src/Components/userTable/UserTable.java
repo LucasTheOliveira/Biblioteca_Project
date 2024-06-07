@@ -1,13 +1,16 @@
 package Components.userTable;
 
+import javax.jws.soap.SOAPBinding.Use;
 import javax.swing.*;
 import javax.swing.table.*;
 
+import Components.Enum.Book;
+import Components.Enum.BookDAO;
 import Components.Enum.User;
+import Components.Enum.UserDAO;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -16,7 +19,8 @@ import Components.CustomDialogs.AddUserDialog;
 import Components.CustomDialogs.CustomDeleteConfirmationDialog;
 import Components.CustomDialogs.SuccessMessageDialog;
 import Components.Enum.UserType;
-import Conection.ConectionSql;
+import Components.customTitle.TitlePanel;
+import Main.Main;
 
 // CLASSE DO PAINEL DA TABELA
 public class UserTable extends JPanel {
@@ -99,8 +103,10 @@ public class UserTable extends JPanel {
     }
 
     public void searchInUserTable(String searchTerm) {
-        if (searchTerm.equals("")) {
-            model.setUsers(usuarios);
+        if (searchTerm.equals("") || searchTerm.equals("Digite aqui para pesquisar...")) {
+            UserDAO userDAO = new UserDAO();
+            List<User> users = userDAO.getUsers();
+            model.setUsers(users);
         } else {
             List<User> searchResults = new ArrayList<>();
             String lowerCaseSearchTerm = searchTerm.toLowerCase();
@@ -114,34 +120,29 @@ public class UserTable extends JPanel {
         model.fireTableDataChanged();
     }
 
-    public void editUser(String originalName, String newName, String senha, UserType tipo, List<String> rentedBooks) throws SQLException {
+    public void editUser(String originalName, String newName, String senha, UserType tipo, List<String> rentedBooks) {
+        UserDAO userDao = new UserDAO();
+        List<User> usuarios = userDao.getUsers();
         for (User usuario : usuarios) {
             if (usuario.getNome().equals(originalName)) {
                 usuario.setNome(newName);
                 usuario.setSenha(senha);
                 usuario.setTipo(tipo);
                 usuario.setRentedBooks(rentedBooks);
-
-                ConectionSql conexao = new ConectionSql();
-                conexao.OpenDataBase();
-                conexao.atualizarUsuario(usuario);
-                conexao.CloseDatabase();
+                userDao.atualizarUsuario(usuario);
                 break;
             }
         }
-        model.fireTableDataChanged();
-    }
 
-    public void addUser(String name, String senha, UserType tipo, List<String> rentedBooks) throws SQLException {
+        updateTable();
+    }
+    
+    public void addUser(String name, String senha, UserType tipo, List<String> rentedBooks) {
+        UserDAO userDao = new UserDAO();
         int nextId = getNextID();
         User newUser = new User(nextId, name, senha, tipo, rentedBooks);
-        usuarios.add(newUser);
-
-        ConectionSql conexao = new ConectionSql();
-        conexao.OpenDataBase();
-        conexao.inserirUsuario(newUser);
-        conexao.CloseDatabase();
-
+        userDao.inserirUsuario(newUser);
+    
         Vector<Object> rowData = new Vector<>();
         rowData.add(newUser.getId());
         rowData.add(newUser.getNome());
@@ -149,7 +150,16 @@ public class UserTable extends JPanel {
         rowData.add(newUser.getTipo());
         rowData.add("");
 
+        usuarios.add(newUser);
         model.addRow(rowData);
+        updateTable();
+    }
+
+    public void updateTable() {
+        UserDAO userDao = new UserDAO();
+        List<User> user = userDao.getUsers();
+        model.setUsers(user);
+        model.fireTableDataChanged();
         searchInUserTable("");
     }
 
@@ -250,8 +260,10 @@ public class UserTable extends JPanel {
                     int selectedRow = table.convertRowIndexToModel(row);
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(UserTable.this);
                     User usuario = usuarios.get(selectedRow);
-
-                    AddUserDialog addUserDialog = new AddUserDialog(frame, UserTable.this, usuario.getNome());
+                    UserTable userTable = new UserTable(admin, usuarios);
+                    Main mainScreen = new Main(admin);
+                    TitlePanel titlePanel = new TitlePanel(frame, getIgnoreRepaint(), mainScreen, userTable, true);
+                    AddUserDialog addUserDialog = new AddUserDialog(frame, userTable, null, titlePanel);
                     addUserDialog.setUsername(usuario.getNome());
                     addUserDialog.setPassword(usuario.getSenha());
                     addUserDialog.selectUserType(usuario.getTipo());
@@ -265,12 +277,12 @@ public class UserTable extends JPanel {
             deleteButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     String usuarioNome = (String) model.getValueAt(row, 1);
-
+            
                     CustomDeleteConfirmationDialog confirmationDialog = new CustomDeleteConfirmationDialog(null,
-                            "Tem certeza de que deseja deletar o usuario \"" + usuarioNome + "\"?",
+                            "Tem certeza de que deseja deletar o usuário \"" + usuarioNome + "\"?",
                             new ImageIcon(getClass().getResource("/icons/delete.png")));
                     confirmationDialog.setVisible(true);
-
+            
                     if (confirmationDialog.isConfirmed()) {
                         if (table.isEditing()) {
                             table.getCellEditor().cancelCellEditing();
@@ -278,23 +290,17 @@ public class UserTable extends JPanel {
                         
                         int selectedRow = table.convertRowIndexToModel(row);
                         User usuarioRemovido = usuarios.get(selectedRow);
-
-                        try {
-                            ConectionSql conexao = new ConectionSql();
-                            conexao.OpenDataBase();
-                            conexao.deletarUsuario(usuarioRemovido);
-                            conexao.CloseDatabase();
-                        } catch (SQLException ex) {
-                            ex.printStackTrace();
-                        }
-
+            
+                        UserDAO userDAO = new UserDAO();
+                        userDAO.deletarUsuario(usuarioRemovido);
+            
                         model.removeRow(selectedRow);
                         usuarios.remove(selectedRow);
                         searchInUserTable("");
                         Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(deleteButton);
-
+            
                         SuccessMessageDialog.showMessageDialog(parentFrame,
-                                "Livro \"" + usuarioRemovido.getNome() + "\" deletado com sucesso!",
+                                "Usuário \"" + usuarioRemovido.getNome() + "\" deletado com sucesso!",
                                 "Sucesso",
                                 new Color(207, 14, 14),
                                 Color.WHITE,

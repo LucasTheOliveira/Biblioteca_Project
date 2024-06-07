@@ -4,10 +4,10 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import Components.Enum.CurrentUser;
-import Conection.ConectionSql;
+import Components.Enum.User;
+import Components.Enum.UserDAO;
+import Components.Enum.UserType;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import Main.Main;
@@ -130,31 +130,20 @@ public class LoginScreen extends JFrame {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                ConectionSql conexao = new ConectionSql();
-                conexao.OpenDataBase();
-                String sql = "SELECT * FROM usuarios WHERE nome = '" + username + "' AND senha = '" + password + "'";
-                ResultSet resultSet = conexao.ExecutaQuery(sql);
+                UserDAO userDao = new UserDAO();
+                User user = userDao.getUserByUsernameAndPassword(username, password);
 
-                try {
-                    if (resultSet.next()) {
-                        String userType = resultSet.getString("tipo");
-                        boolean isAdmin = userType.equals("admin");
-                        CurrentUser currentUser = CurrentUser.getInstance();
-                        currentUser.setUsername(username);
-                        currentUser.setAdmin(isAdmin);
-                        new Main(isAdmin).setVisible(true);
-                        dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Usuário ou senha inválidos.");
-                    }
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                } finally {
-                    try {
-                        conexao.CloseDatabase();
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
+                if (user != null) {
+                    boolean isAdmin = user.getTipo() == UserType.ADMIN;
+                    CurrentUser currentUser = CurrentUser.getInstance();
+                    currentUser.setUsername(username);
+                    currentUser.setPassword(password);
+                    currentUser.setAdmin(isAdmin);
+                    
+                    Main mainScreen = new Main(isAdmin);
+                    mainScreen.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Usuário ou senha inválidos.");
                 }
             }
         });

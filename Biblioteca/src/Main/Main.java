@@ -2,18 +2,17 @@ package Main;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import Components.SearchPanel.*;
 import Components.customTitle.*;
 import Components.userTable.UserTable;
-import Conection.ConectionSql;
 import Components.AddButtons.*;
 import Components.BookTable.*;
 import Components.Enum.Book;
+import Components.Enum.BookDAO;
 import Components.Enum.User;
+import Components.Enum.UserDAO;
 
 public class Main extends JFrame {
     private BookTablePanel tablePanel;
@@ -31,14 +30,16 @@ public class Main extends JFrame {
         setLocationRelativeTo(null);
         setBackground(Color.WHITE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        ConectionSql conexao = new ConectionSql();
+
+        UserDAO userDao = new UserDAO();
+        BookDAO bookDao = new BookDAO();
 
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(Color.WHITE);
         getContentPane().add(mainPanel);
 
         // Label title "Biblioteca unaerp"
-        TitlePanel titlePanel = new TitlePanel(this, admin, this);
+        TitlePanel titlePanel = new TitlePanel(this, admin, this, userTablePanel, false);
         mainPanel.add(titlePanel, titlePanel.getConstraints());
 
         // Label "Lista de Livros"
@@ -53,15 +54,13 @@ public class Main extends JFrame {
         mainPanel.add(searchField, searchField.getConstraints());
 
         // Tabela de Livros
-        conexao.OpenDataBase();
-        List<Book> livros = conexao.getLivros();
-        tablePanel = new BookTablePanel(admin, livros);
+        List<Book> livros = bookDao.getLivros();
+        tablePanel = new BookTablePanel(admin, livros, userTablePanel);
         tablePanel.setAdmin(admin);
         mainPanel.add(tablePanel, tablePanel.getConstraints());
 
-        // Tabela de Livros
-        conexao.OpenDataBase();
-        List<User> users = conexao.getUsers();
+        // Tabela de Usuários
+        List<User> users = userDao.getUsers();
         userTablePanel = new UserTable(admin, users);
         userTablePanel.setAdmin(admin);
         mainPanel.add(userTablePanel, userTablePanel.getConstraints());
@@ -88,27 +87,6 @@ public class Main extends JFrame {
         addUserButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         if (admin) {
             mainPanel.add(addUserButton, addUserButton.getConstraints());
-        }
-
-        conexao.OpenDataBase();
-        String sql = "SELECT * FROM usuarios";
-        ResultSet resultSet = conexao.ExecutaQuery(sql);
-        int rowCount = 0;
-        if (resultSet != null) {
-            try {
-                while (resultSet.next()) {
-                    rowCount++;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println("Número de linhas afetadas: " + rowCount);
-
-        try {
-            conexao.CloseDatabase();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 

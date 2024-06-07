@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import Components.CustomDialogs.AddUserDialog;
+import Components.customTitle.TitlePanel;
 import Components.userTable.UserTable;
 import Main.Main;
 
@@ -34,7 +35,8 @@ public class AddUserButton extends JButton {
         addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(userTablePanel);
-                AddUserDialog addUserDialog = new AddUserDialog(frame, userTablePanel, null);
+                TitlePanel titlePanel = new TitlePanel(frame, getIgnoreRepaint(), mainScreen, userTablePanel, getFocusTraversalKeysEnabled());
+                AddUserDialog addUserDialog = new AddUserDialog(frame, userTablePanel, null, titlePanel);
                 addUserDialog.setVisible(true);
             }
         });
