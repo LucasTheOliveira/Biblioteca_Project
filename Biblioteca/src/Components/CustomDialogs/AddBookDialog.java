@@ -302,7 +302,15 @@ public class AddBookDialog extends JDialog {
     }
 
     public void setRentTime(String rentTimeString) {
-        if (rentTimeString != null && !rentTimeString.isEmpty()) {
+        if (rentTimeString != null && !rentTimeString.isEmpty() 
+        || rentTimeString == "Digite um numero"
+        || rentTimeString == "Digite um numero Dias"
+        || rentTimeString == "Digite um numero Semanas"
+        || rentTimeString == "Digite um numero Meses"
+        || rentTimeString == "Dias" 
+        || rentTimeString == "Semanas" 
+        || rentTimeString == "Meses"
+        ) {
             String[] parts = rentTimeString.split(" ");
             if (parts.length == 2) {
                 String rentTimeValue = parts[0];
@@ -321,7 +329,9 @@ public class AddBookDialog extends JDialog {
                 || authorField.getText().equals("Digite o nome do autor");
         boolean isIsbnEmpty = isbnField.getText().trim().isEmpty()
                 || isbnField.getText().equals("Digite o ISBN do livro");
-        saveButton.setEnabled(!isTitleEmpty && !isAuthorEmpty && !isIsbnEmpty);
+        boolean isRentalTimeEmpty = rentTimeField.getText().trim().isEmpty() 
+                || rentTimeField.getText().equals("Digite um numero");
+        saveButton.setEnabled(!isTitleEmpty && !isAuthorEmpty && !isIsbnEmpty && !isRentalTimeEmpty);
     }
 
     private JTextField createTextField(String placeholder) {

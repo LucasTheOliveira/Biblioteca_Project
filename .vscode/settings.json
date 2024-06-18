@@ -12,6 +12,12 @@
         "Biblioteca\\lib\\javax.persistence-api-2.2.jar",
         "Biblioteca\\lib\\javax.transaction-api-1.2.jar",
         "Biblioteca\\lib\\jboss-logging-3.4.2.Final.jar",
+        "Biblioteca\\lib\\jaxb-api-2.3.1.jar",
+        "Biblioteca\\lib\\jaxb-impl-2.3.1.jar",
+        "Biblioteca\\lib\\jaxb-runtime-2.3.1.jar",
+        "Biblioteca\\lib\\jaxb-core-2.3.0.1.jar",
+        "Biblioteca\\lib\\istack-commons-runtime-3.0.11.jar",
+        "Biblioteca\\lib\\javax.activation-api-1.2.0.jar"
     ],
     "java.project.sourcePaths": [
         "Biblioteca\\src"

@@ -36,7 +36,7 @@ public class AddUserButton extends JButton {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(userTablePanel);
                 TitlePanel titlePanel = new TitlePanel(frame, getIgnoreRepaint(), mainScreen, userTablePanel, getFocusTraversalKeysEnabled());
-                AddUserDialog addUserDialog = new AddUserDialog(frame, userTablePanel, null, titlePanel);
+                AddUserDialog addUserDialog = new AddUserDialog(frame, userTablePanel, null, 0, titlePanel, false);
                 addUserDialog.setVisible(true);
             }
         });

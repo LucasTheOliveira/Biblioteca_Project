@@ -4,7 +4,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
-        <property name="hibernate.connection.url">jdbc:sqlite:C:\\sqlite3\\library.db</property>
+        <property name="hibernate.connection.url">jdbc:sqlite:Biblioteca/src/library.db</property>
         <property name="hibernate.dialect">Conection.SQLiteDialect</property>
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
