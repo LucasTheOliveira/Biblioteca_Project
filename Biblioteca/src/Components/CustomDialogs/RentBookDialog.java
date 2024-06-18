@@ -34,6 +34,7 @@ public class RentBookDialog extends JDialog {
     private JTextField cpfTextField;
     private JTextField phoneTextField;
     private JTextField rentalTimeTextField;
+    @SuppressWarnings("unused")
     private int selectedRow;
     private JButton saveButton;
     private BookTablePanel tablePanel;

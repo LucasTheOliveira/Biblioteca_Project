@@ -18,7 +18,6 @@ public class TitlePanel extends JPanel {
     private Main mainScreen;
     private JButton userListButton;
     private JButton logoutButton;
-    private JButton addUserButton;
     private UserTable userTable;
     private Boolean userEdit;
 
@@ -64,18 +63,6 @@ public class TitlePanel extends JPanel {
         });
 
         if (isAdmin) {
-            addUserButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource("/icons/edit_user.png"))));
-            addUserButton.setBackground(Color.WHITE);
-            addUserButton.setFocusable(false);
-            addUserButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            addUserButton.setToolTipText("Adicionar Usuário");
-            addUserButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    AddUserDialog addUserDialog = new AddUserDialog(parentFrame, userTable, null, TitlePanel.this);
-                    addUserDialog.setVisible(true);
-                }
-            });
 
             userListButton = new JButton(resizeIcon(new ImageIcon(getClass().getResource(mainScreen.isUserTableOn() ? "/icons/user.png" : "/icons/livro.png"))));
             userListButton.setBackground(Color.WHITE);
@@ -96,7 +83,6 @@ public class TitlePanel extends JPanel {
                 }
             });
 
-            buttonPanel.add(addUserButton);
             buttonPanel.add(userListButton);
         }
 
@@ -104,14 +90,6 @@ public class TitlePanel extends JPanel {
         buttonPanel.setBorder(new EmptyBorder(0, 0, 0, 80));
 
         add(buttonPanel, BorderLayout.EAST);
-
-        if (isAdmin) {
-            JPanel leftButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            leftButtonPanel.setOpaque(false);
-            leftButtonPanel.add(addUserButton);
-            leftButtonPanel.setBorder(new EmptyBorder(0, 0, 0, 10));
-            add(leftButtonPanel, BorderLayout.WEST);
-        }
     }
 
     public Boolean getUserEdit() {

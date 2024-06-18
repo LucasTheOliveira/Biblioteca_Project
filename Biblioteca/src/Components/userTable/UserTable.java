@@ -1,11 +1,8 @@
 package Components.userTable;
 
-import javax.jws.soap.SOAPBinding.Use;
 import javax.swing.*;
 import javax.swing.table.*;
 
-import Components.Enum.Book;
-import Components.Enum.BookDAO;
 import Components.Enum.User;
 import Components.Enum.UserDAO;
 
@@ -15,11 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+
 import Components.CustomDialogs.AddUserDialog;
 import Components.CustomDialogs.CustomDeleteConfirmationDialog;
 import Components.CustomDialogs.SuccessMessageDialog;
 import Components.Enum.UserType;
 import Components.customTitle.TitlePanel;
+import Conection.HibernateUtil;
 import Main.Main;
 
 // CLASSE DO PAINEL DA TABELA
@@ -27,7 +28,6 @@ public class UserTable extends JPanel {
     private JTable table;
     private UserTableModel model;
     private List<User> usuarios;
-    @SuppressWarnings("unused")
     private boolean admin;
 
     public UserTable(boolean admin, List<User> usuarios) {
@@ -120,21 +120,30 @@ public class UserTable extends JPanel {
         model.fireTableDataChanged();
     }
 
-    public void editUser(String originalName, String newName, String senha, UserType tipo, List<String> rentedBooks) {
-        UserDAO userDao = new UserDAO();
-        List<User> usuarios = userDao.getUsers();
-        for (User usuario : usuarios) {
-            if (usuario.getNome().equals(originalName)) {
+    public void editUser(int userId, String newName, String senha, UserType tipo, List<String> rentedBooks) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+    
+            Query<User> query = session.createQuery("from User where id = :userId", User.class);
+            query.setParameter("userId", userId);
+            User usuario = query.uniqueResult();
+    
+            if (usuario != null) {
                 usuario.setNome(newName);
                 usuario.setSenha(senha);
                 usuario.setTipo(tipo);
                 usuario.setRentedBooks(rentedBooks);
-                userDao.atualizarUsuario(usuario);
-                break;
+    
+                session.update(usuario);
+                session.getTransaction().commit();
+                updateTable();
+                System.out.println("Usuário atualizado com sucesso.");
+            } else {
+                System.out.println("Usuário não encontrado.");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        updateTable();
     }
     
     public void addUser(String name, String senha, UserType tipo, List<String> rentedBooks) {
@@ -157,10 +166,9 @@ public class UserTable extends JPanel {
 
     public void updateTable() {
         UserDAO userDao = new UserDAO();
-        List<User> user = userDao.getUsers();
-        model.setUsers(user);
+        usuarios = userDao.getUsers();
+        model.setUsers(usuarios);
         model.fireTableDataChanged();
-        searchInUserTable("");
     }
 
     private int getNextID() {
@@ -258,16 +266,19 @@ public class UserTable extends JPanel {
             editButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     int selectedRow = table.convertRowIndexToModel(row);
+                    int userId = (int) model.getValueAt(selectedRow, 0);
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(UserTable.this);
                     User usuario = usuarios.get(selectedRow);
                     UserTable userTable = new UserTable(admin, usuarios);
                     Main mainScreen = new Main(admin);
+                    boolean isEditing = true;
                     TitlePanel titlePanel = new TitlePanel(frame, getIgnoreRepaint(), mainScreen, userTable, true);
-                    AddUserDialog addUserDialog = new AddUserDialog(frame, userTable, null, titlePanel);
+                    AddUserDialog addUserDialog = new AddUserDialog(frame, userTable, null, userId, titlePanel, isEditing);
                     addUserDialog.setUsername(usuario.getNome());
                     addUserDialog.setPassword(usuario.getSenha());
                     addUserDialog.selectUserType(usuario.getTipo());
-
+                    searchInUserTable("");
+                    model.fireTableDataChanged();
                     editButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     editButton.setFocusable(false);
                     addUserDialog.setVisible(true);

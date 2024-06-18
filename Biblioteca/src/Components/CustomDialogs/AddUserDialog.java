@@ -25,7 +25,7 @@ public class AddUserDialog extends JDialog {
     public TitlePanel titlePanel;
     public Boolean userEdit;
 
-    public AddUserDialog(JFrame parentFrame, UserTable userTablePanel, String originalName, TitlePanel titlePanel) {
+    public AddUserDialog(JFrame parentFrame, UserTable userTablePanel, String originalName, int userId, TitlePanel titlePanel, boolean isEditing) {
         super(parentFrame, "", true);
         this.isEditing = (originalName != null);
         this.userTablePanel = userTablePanel;
@@ -171,9 +171,9 @@ public class AddUserDialog extends JDialog {
                 String senha = new String(passwordField.getPassword());
                 UserType tipo = (UserType) typeComboBox.getSelectedItem();
                 List<String> rentedBooks = new ArrayList<>();
-
+            
                 if (isEditing || !userEdit) {
-                    userTablePanel.editUser(originalName, usuario, senha, tipo, rentedBooks);
+                    userTablePanel.editUser(userId, usuario, senha, tipo, rentedBooks);
                     SuccessMessageDialog.showMessageDialog(
                             AddUserDialog.this,
                             "Usuário \"" + usuario + "\" editado com sucesso!",

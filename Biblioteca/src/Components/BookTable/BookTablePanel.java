@@ -169,6 +169,8 @@ public class BookTablePanel extends JPanel {
             livros = searchResults;
         }
         model.fireTableDataChanged();
+        table.revalidate();
+        table.repaint();
     }
 
     public void addBook(String isbn, String title, String author, String category, String status, String rentTime,

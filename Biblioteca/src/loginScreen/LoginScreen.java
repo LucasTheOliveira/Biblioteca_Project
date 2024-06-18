@@ -142,6 +142,7 @@ public class LoginScreen extends JFrame {
                     
                     Main mainScreen = new Main(isAdmin);
                     mainScreen.setVisible(true);
+                    dispose();
                 } else {
                     JOptionPane.showMessageDialog(null, "Usuário ou senha inválidos.");
                 }
